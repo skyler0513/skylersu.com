@@ -359,7 +359,7 @@
 </ol>
 <h2 id="数据的同步">数据的同步</h2>
 <p>和zk的zab协议一样，raft也是先在大多数的节点上写入entry  log后，然后通知各个节点提交。但是在描述上二者有区别，raft第一阶段叫commit，第二阶段叫apply。log entry的示意图如下
-<img src="http://img.sysummery.top/raftlogentry.jpg" alt=""></p>
+<img src="https://img.sysummery.top/raftlogentry.jpg" alt=""></p>
 <p>raft的每一个entry log都有一个entry log id，因此可以保证消息的顺序。</p>
 <h3 id="正常的同步">正常的同步</h3>
 <p>有了leader之后，集群的读写请求都要经过leader，follower只做备份。</p>
@@ -369,7 +369,7 @@
 <h3 id="重新选举leader后的数据同步">重新选举leader后的数据同步</h3>
 <p>这个我想说的通俗点，就是leader与follower比较各自已经commit的entrty log id。直至找到二者的第一个”共同点“。之后leader就会把”共同点“后面的entrty log同步给follower。</p>
 <p>下图是一个leader节点对应的follower的状态
-<img src="http://img.sysummery.top/raftlandf.png" alt=""></p>
+<img src="https://img.sysummery.top/raftlandf.png" alt=""></p>
 <p>如果follower是b,那么leader与follower会先找到term为4 entrty log id为4的日志的位置作为”共同点“，之后leader会把”共同点“后面的日志同步给follower。</p>
 <h3 id="state-machine-safety">State Machine Safety</h3>
 <p>如果一个节点在某一个log entry的位置apply了这条log里面的command，那么其他节点也必须在这个log entry的位置apply这条log。</p>

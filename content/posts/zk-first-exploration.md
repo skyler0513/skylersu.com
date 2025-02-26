@@ -2,7 +2,7 @@
 title: ZooKeeper总结
 date: 2020-03-17 13:17:11
 lastmod: 2020-03-17 13:17:11
-cover: http://img.sysummery.top/zk.png
+cover: https://img.sysummery.top/zk.png
 tags:
   - 分布式
 ---
@@ -30,10 +30,10 @@ ZooKeeper是一个分布式的，开放源码的分布式应用程序协调服�
 
 ### 高度可靠地数据注册表
 
-![](http://img.sysummery.top/zkc.jpg)
+![](https://img.sysummery.top/zkc.jpg)
 ## znode
 ZooKeeper命名空间内部拥有一个树状的内存模型，其中各节点被称为znode。每个znode包含一个路径和与之相关的元数据，以及该znode下关联的子节点列表。
-![](http://img.sysummery.top/znode.png)
+![](https://img.sysummery.top/znode.png)
 
 ### znode节点类型
 

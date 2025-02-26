@@ -2,22 +2,22 @@
 title: Basic Paxos 与 Multi Paxos
 date: 2020-03-14 22:25:13
 lastmod: 2020-03-14 22:25:13
-cover: http://img.sysummery.top/yizhi.jpg
+cover: https://img.sysummery.top/yizhi.jpg
 tags:
   - 分布式
 ---
 Paxos算法是Leslie Lamport于1990年提出的一种基于消息传递且具有高度容错特性的一致性算法，是目前公认的解决分布式一致性问题最有效的算法之一。
 <!--more-->
-这篇文章是基于[Paxos算法详解](http://zhuanlan.zhihu.com/p/31780743)加上自己的理解和总结完成的。
+这篇文章是基于[Paxos算法详解](https://zhuanlan.zhihu.com/p/31780743)加上自己的理解和总结完成的。
 ## Basic Paxos
 ### 角色
-![](http://img.sysummery.top/paxosjuese.jpg)
+![](https://img.sysummery.top/paxosjuese.jpg)
 1. proposer，负责接收客户端的请求并向acceptor提prepare请求和accept请求。
 2. acceptor，接受proposer的请求并在特定情况下给与回复。
 3. learner，不参与决策，学习最终达成一致的提案，一旦有多数acceptor对值达成了共识那么就写入值。
 
 ### 流程
-![](http://img.sysummery.top/paxos%E6%B5%81%E7%A8%8B.jpg)
+![](https://img.sysummery.top/paxos%E6%B5%81%E7%A8%8B.jpg)
 在说流程前先确定几个名词的意义
 * max_proposal_id acceptor目前通过prepare请求收到的最大的proposal的id
 * accept_id acceptor目前决定要accept的proposal的id
@@ -39,15 +39,15 @@ Paxos算法是Leslie Lamport于1990年提出的一种基于消息传递且具有
 4. basic paxos会有活锁的可能。
 
 下面是几个案例。s1提出把值更新为x，s5提出把值更新成y。P代表prepare阶段，A代表accept阶段。s1的proposal_id是3.1，s5的proposal_id是4.5。
-![](http://img.sysummery.top/paxos%E6%A1%88%E4%BE%8B1.jpg)
+![](https://img.sysummery.top/paxos%E6%A1%88%E4%BE%8B1.jpg)
 
 s1的proposal已经被大多数accept了，此时s5的prepare发出后，如果有大多数acceptor返回那么返回的结果中要不是x要不是空而且x一定存在。所以s5的accept请求中的value是想而不是自己的y。最终的结果是x被写入。s5的y只能走下一轮的流程。
 
-![](http://img.sysummery.top/paxos%E7%A4%BA%E4%BE%8B2.jpg)
+![](https://img.sysummery.top/paxos%E7%A4%BA%E4%BE%8B2.jpg)
 
 如果s1的proposal只被一个acceptor请求，即s3，同时s5的prepare请求收到了s3的回应，那么s5的accept请求中的值还是x
 
-![](http://img.sysummery.top/paxos%E7%A4%BA%E4%BE%8B3.jpg)
+![](https://img.sysummery.top/paxos%E7%A4%BA%E4%BE%8B3.jpg)
 这个案例的情况与上面的正好相反，s1的proposal只被s1自己accept了，而s5的prepare返回的结果中不包含s1的结果，此时s5就会用自己的值y来发起accept请求。
 
 ## Multi Paxos

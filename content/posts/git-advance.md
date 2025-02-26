@@ -2,7 +2,7 @@
 title: Git进阶
 date: 2019-12-01 12:18:22
 lastmod: 2019-12-01 12:18:22
-cover: http://img.sysummery.top/git_cover.jpeg
+cover: https://img.sysummery.top/git_cover.jpeg
 tags:
   - git
 ---

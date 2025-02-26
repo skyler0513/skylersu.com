@@ -20,7 +20,7 @@ https是在应用层(http)与传输层之间多了一个SSL(TSL)层。这个层�
 
 ## Https通信过程
 
-![https的简易流程](http://img.sysummery.top/https.jpg)
+![https的简易流程](https://img.sysummery.top/https.jpg)
 
 上图中还缺少一些步骤，比如通信双方还会对双方密码能力的信息，比如支持的SSL(TSL)版本，加密组件等进行协商约定等。但是本文只想介绍https的原理和关键步骤，所以没有画出。
 

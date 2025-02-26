@@ -345,10 +345,10 @@
 控制时序：各个client往一个znode下面创建临时有序节点，创建的节点的编号最小的client获取到了锁。没获取到锁的client开始watch这个znode下面的节点。获取到锁的client执行完后删除这个锁节点，其他watch的client会受到通知然后看谁的编号最小谁就获取到了这个锁</p>
 <p>获取锁的时候，创建的节点都是暂时的，如果获得锁的进程意外退出，那么这个暂时的节点会立马被删除。</p>
 <h3 id="高度可靠地数据注册表">高度可靠地数据注册表</h3>
-<p><img src="http://img.sysummery.top/zkc.jpg" alt=""></p>
+<p><img src="https://img.sysummery.top/zkc.jpg" alt=""></p>
 <h2 id="znode">znode</h2>
 <p>ZooKeeper命名空间内部拥有一个树状的内存模型，其中各节点被称为znode。每个znode包含一个路径和与之相关的元数据，以及该znode下关联的子节点列表。
-<img src="http://img.sysummery.top/znode.png" alt=""></p>
+<img src="https://img.sysummery.top/znode.png" alt=""></p>
 <h3 id="znode节点类型">znode节点类型</h3>
 <ol>
 <li>持久节点</li>

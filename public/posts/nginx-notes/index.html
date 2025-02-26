@@ -333,7 +333,7 @@
         <p>Nginx 是一个免费、开源、高性能、轻量级的 HTTP 和反向代理服务器，也是一个电子邮件(IMAP/POP3)代理服务器，其特点是占有内存少，并发能力强。</p>
 <h2 id="nginx的架构">nginx的架构</h2>
 <p>Nginx 里有一个 master 进程和多个 worker 进程。master 进程并不处理网络请求，主要负责调度工作进程：加载配置、启动工作进程及非停升级。worker 进程负责处理网络请求与响应。</p>
-<p><img src="http://img.sysummery.top/nginx_process.png" alt=""></p>
+<p><img src="https://img.sysummery.top/nginx_process.png" alt=""></p>
 <p>master进程主要用来管理worker进程，具体包括如下4个主要功能：</p>
 <p>接收来自外界的信号。</p>
 <p>向各worker进程发送信号。</p>
@@ -456,7 +456,7 @@
 </span></span><span style="display:flex;"><span>    server<span style="color:#f92672">{</span>
 </span></span><span style="display:flex;"><span>        listen 80; 
 </span></span><span style="display:flex;"><span>        location / <span style="color:#f92672">{</span>            
-</span></span><span style="display:flex;"><span>            proxy_pass http://myproject;
+</span></span><span style="display:flex;"><span>            proxy_pass https://myproject;
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>   <span style="color:#f92672">}</span>
@@ -472,7 +472,7 @@
 </span></span><span style="display:flex;"><span>    server<span style="color:#f92672">{</span>
 </span></span><span style="display:flex;"><span>        listen 80; 
 </span></span><span style="display:flex;"><span>        location / <span style="color:#f92672">{</span>            
-</span></span><span style="display:flex;"><span>            proxy_pass http://myproject;
+</span></span><span style="display:flex;"><span>            proxy_pass https://myproject;
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>   <span style="color:#f92672">}</span>
@@ -489,7 +489,7 @@
 </span></span><span style="display:flex;"><span>    server<span style="color:#f92672">{</span>
 </span></span><span style="display:flex;"><span>        listen 80; 
 </span></span><span style="display:flex;"><span>        location / <span style="color:#f92672">{</span>            
-</span></span><span style="display:flex;"><span>            proxy_pass http://myproject;
+</span></span><span style="display:flex;"><span>            proxy_pass https://myproject;
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>   <span style="color:#f92672">}</span>

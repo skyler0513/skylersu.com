@@ -363,7 +363,7 @@
 </ol>
 <h3 id="14-relay-log">1.4 relay log</h3>
 <p>在从库中会有一个专门的IO线程不断的从主库中读取bin log并把读取的内容写入relay log中。然后会有另外的线程会将新产生的relay log重放到从库中。主从复制的流程大致为</p>
-<p><img src="http://img.sysummery.top/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_cde5d8b5-3035-4efa-bb0b-367394045f75.png" alt=""></p>
+<p><img src="https://img.sysummery.top/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_cde5d8b5-3035-4efa-bb0b-367394045f75.png" alt=""></p>
 <h3 id="21-redo-log">2.1 redo log</h3>
 <p>存在于共享表空间中，是<strong>物理日志</strong>，记录的是一个事务中数据页的变化信息，不是某行的数据的变化信息。</p>
 <p>用于保证事务的持久性。在使用innodb存储引擎的时候，当一页数据被更新时首先在innodb的缓冲池中进行更新，然后才会根据一定的策略异步刷新回磁盘。那么问题来了，如果缓冲池中的数据页还未来的急刷新回磁盘服务器就宕机了怎么办？innodb是采用的日志先于数据刷新到磁盘的策略。</p>

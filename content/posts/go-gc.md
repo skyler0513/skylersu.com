@@ -2,7 +2,7 @@
 title: Go语言中的垃圾回收
 date: 2020-01-01 17:37:50
 lastmod: 2020-01-01 17:37:50
-cover: http://img.sysummery.top/gogc.jpg
+cover: https://img.sysummery.top/gogc.jpg
 tags:
   - go
 ---
@@ -23,7 +23,7 @@ a和b二者互相引用，并且没有其他的引用了，引用计数法并不
 是一种自动内存管理基于追踪的垃圾回收算法。垃圾回收的时候首先会STW。然后从根节点开始追踪每一个可达的对象，标记完之后就去回收没有被标记的几点然后进行回收。
 
 那么标记清扫法能不能解决循环引用的问题呢？是可以的
-![](http://img.sysummery.top/biaojishanchu.jpg)
+![](https://img.sysummery.top/biaojishanchu.jpg)
 
 虽然object4与object5互相引用，但是从根节点起是没有到达他们的路径的，因此他们两个不会被标记可达，在清扫阶段会被回收。
 
@@ -37,7 +37,7 @@ a和b二者互相引用，并且没有其他的引用了，引用计数法并不
 java的GC就是分代收集。
 
 ### 三色标记法
-![](http://img.sysummery.top/sansebiaojifa.gif)
+![](https://img.sysummery.top/sansebiaojifa.gif)
 
 三色标记算法是对标记阶段的改进，原理如下：
 
@@ -47,13 +47,13 @@ java的GC就是分代收集。
 4. 重复 3，直到灰色对象队列为空。此时白色对象即为垃圾，进行回收。
 
 步骤1、2、3的时候需要STW, 不然会出现问题。假如不STW，如下图，灰色的B节点引用了白色的C节点。当C节点还没有变灰的时候，B和C之间的引用断了并且已经变黑的A节点又引用了C。因此C不会变成灰色的，还是白色。等到回收的时候会把C回收了，但是C明明被黑色的A引用着，就出问题。因此三色球算法在标记的过程中必须要STW。
-![](http://img.sysummery.top/3sbjfqx.jpg)
+![](https://img.sysummery.top/3sbjfqx.jpg)
 
 
 ## go语言的垃圾回收算法
 go原因的垃圾回收算法是基于三色标记法的，并在此基础上加入了写屏障缩短了整个过程的STW时间。
 
-![](http://img.sysummery.top/gc.png)
+![](https://img.sysummery.top/gc.png)
 
 具体的过程是
 

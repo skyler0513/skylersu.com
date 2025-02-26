@@ -2,7 +2,7 @@
 title: Go语言中的锁
 date: 2020-01-15 14:57:01
 lastmod: 2020-01-15 14:57:01
-cover: http://img.sysummery.top/golang2.jpeg
+cover: https://img.sysummery.top/golang2.jpeg
 tags:
   - go
 ---

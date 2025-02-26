@@ -341,7 +341,7 @@ b.a = a;
 <h3 id="标记清扫法">标记清扫法</h3>
 <p>是一种自动内存管理基于追踪的垃圾回收算法。垃圾回收的时候首先会STW。然后从根节点开始追踪每一个可达的对象，标记完之后就去回收没有被标记的几点然后进行回收。</p>
 <p>那么标记清扫法能不能解决循环引用的问题呢？是可以的
-<img src="http://img.sysummery.top/biaojishanchu.jpg" alt=""></p>
+<img src="https://img.sysummery.top/biaojishanchu.jpg" alt=""></p>
 <p>虽然object4与object5互相引用，但是从根节点起是没有到达他们的路径的，因此他们两个不会被标记可达，在清扫阶段会被回收。</p>
 <p>标记清扫法最大的缺点就是GC的时候会STW。</p>
 <h3 id="分代收集">分代收集</h3>
@@ -349,7 +349,7 @@ b.a = a;
 <p>分配对象的时候从新生代里面分配，如果后面发现对象的生命周期较长，则将其移到老年代，这个过程叫做 promote。随着不断 promote，最后新生代的大小在整个堆的占用比例不会特别大。收集的时候集中主要精力在新生代就会相对来说效率更高，STW 时间也会更短。</p>
 <p>java的GC就是分代收集。</p>
 <h3 id="三色标记法">三色标记法</h3>
-<p><img src="http://img.sysummery.top/sansebiaojifa.gif" alt=""></p>
+<p><img src="https://img.sysummery.top/sansebiaojifa.gif" alt=""></p>
 <p>三色标记算法是对标记阶段的改进，原理如下：</p>
 <ol>
 <li>起初所有对象都是白色。</li>
@@ -358,10 +358,10 @@ b.a = a;
 <li>重复 3，直到灰色对象队列为空。此时白色对象即为垃圾，进行回收。</li>
 </ol>
 <p>步骤1、2、3的时候需要STW, 不然会出现问题。假如不STW，如下图，灰色的B节点引用了白色的C节点。当C节点还没有变灰的时候，B和C之间的引用断了并且已经变黑的A节点又引用了C。因此C不会变成灰色的，还是白色。等到回收的时候会把C回收了，但是C明明被黑色的A引用着，就出问题。因此三色球算法在标记的过程中必须要STW。
-<img src="http://img.sysummery.top/3sbjfqx.jpg" alt=""></p>
+<img src="https://img.sysummery.top/3sbjfqx.jpg" alt=""></p>
 <h2 id="go语言的垃圾回收算法">go语言的垃圾回收算法</h2>
 <p>go原因的垃圾回收算法是基于三色标记法的，并在此基础上加入了写屏障缩短了整个过程的STW时间。</p>
-<p><img src="http://img.sysummery.top/gc.png" alt=""></p>
+<p><img src="https://img.sysummery.top/gc.png" alt=""></p>
 <p>具体的过程是</p>
 <ol>
 <li>首先从 root 开始遍历，root 包括全局指针和 goroutine 栈上的指针。</li>

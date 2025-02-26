@@ -2,7 +2,7 @@
 title: Raft协议学习笔记
 date: 2020-03-15 21:03:50
 lastmod: 2020-03-15 21:03:50
-cover: http://img.sysummery.top/raft.jpg
+cover: https://img.sysummery.top/raft.jpg
 tags:
   - 分布式
 ---
@@ -38,7 +38,7 @@ raft协议里面的角色有三类
 
 ## 数据的同步
 和zk的zab协议一样，raft也是先在大多数的节点上写入entry  log后，然后通知各个节点提交。但是在描述上二者有区别，raft第一阶段叫commit，第二阶段叫apply。log entry的示意图如下
-![](http://img.sysummery.top/raftlogentry.jpg)
+![](https://img.sysummery.top/raftlogentry.jpg)
 
 raft的每一个entry log都有一个entry log id，因此可以保证消息的顺序。
 
@@ -55,7 +55,7 @@ raft的每一个entry log都有一个entry log id，因此可以保证消息的�
 这个我想说的通俗点，就是leader与follower比较各自已经commit的entrty log id。直至找到二者的第一个”共同点“。之后leader就会把”共同点“后面的entrty log同步给follower。
 
 下图是一个leader节点对应的follower的状态
-![](http://img.sysummery.top/raftlandf.png)
+![](https://img.sysummery.top/raftlandf.png)
 
 如果follower是b,那么leader与follower会先找到term为4 entrty log id为4的日志的位置作为”共同点“，之后leader会把”共同点“后面的日志同步给follower。
 

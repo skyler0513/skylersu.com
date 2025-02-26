@@ -2,7 +2,7 @@
 title: Innodb中的锁
 date: 2019-12-07 11:47:11
 lastmod: 2019-12-07 11:47:11
-cover: http://img.sysummery.top/lock_cover.jpg
+cover: https://img.sysummery.top/lock_cover.jpg
 tags:
   - mysql
   - innodb
@@ -64,7 +64,7 @@ select * students where id in (10,20,30) for update;
 ```
 也会锁住匹配的行数据不会锁住任何的间隙
 但是如果是主键或唯一索引的范围查询那么不仅会锁住一行数据还会锁住一个间隙，比如我有一张score表
-![](http://img.sysummery.top/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_c712bf1b-119b-4309-ab36-0251fa0538ae.png)
+![](https://img.sysummery.top/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_c712bf1b-119b-4309-ab36-0251fa0538ae.png)
 里面只有两条数据id分别为35和37
 
 | 事务1 | 事务2 |
@@ -89,7 +89,7 @@ select * students where id in (10,20,30) for update;
 ### 2.1.2 普通索引
 现在score表变成了这样
 
-![](http://img.sysummery.top/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_96c4d877-3f2e-4bd2-a3cd-486e2233b1ea.png)
+![](https://img.sysummery.top/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_96c4d877-3f2e-4bd2-a3cd-486e2233b1ea.png)
 
 
 

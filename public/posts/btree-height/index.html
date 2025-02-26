@@ -342,9 +342,9 @@
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">show</span> variables <span style="color:#66d9ef">like</span> <span style="color:#e6db74">&#39;innodb_page_size&#39;</span>
 </span></span></code></pre></div><ul>
 <li>innodb中聚簇索引（主键）的叶子节点存放的是数据，非叶子节点存放的是关键字和指向下一层的指针，如下图所示，不过实际上叶子结点之间是一个双向链表而不是单向链表
-<img src="http://img.sysummery.top/%E6%88%AA%E5%B1%8F2019-11-21%E4%B8%8B%E5%8D%882.41.29.jpg" alt=""></li>
+<img src="https://img.sysummery.top/%E6%88%AA%E5%B1%8F2019-11-21%E4%B8%8B%E5%8D%882.41.29.jpg" alt=""></li>
 </ul>
-<p>我们假设主键是8字节的bigint型的，B+tree中的指针是6字节，那么一对数据+指针就是14字节，一个数据页的大小时16kb,但是一个数据页中不可能全部存放数据，还会有一些元信息，关于页结构可以参考这篇<a href="http://www.cnblogs.com/bdsir/p/8745553.html" target="_blank">文章</a>
+<p>我们假设主键是8字节的bigint型的，B+tree中的指针是6字节，那么一对数据+指针就是14字节，一个数据页的大小时16kb,但是一个数据页中不可能全部存放数据，还会有一些元信息，关于页结构可以参考这篇<a href="https://www.cnblogs.com/bdsir/p/8745553.html" target="_blank">文章</a>
 。我们假设一个数据页存放数据部分最大16282字节。那么一个数据页可以存放<code>16282/14=1163</code>对“键值与指针”。</p>
 <p>如果一个数据表的主键索引的高度是2，说明他的第一层是键值和指针，第二层就是数据页了。第一层有1163个指针，也就说明第二层有1163个数据页，总共能存放<code>1163*16282=18935966</code>比特的数据。如果一行数据的平均大小为1kb,那么高度为2的B+tree可以存放<code>18935966/1024=18492</code>条数据。下面的这个是sql是查看一张表的行数据的平均大小</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span>
@@ -384,16 +384,16 @@
 </span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">AND</span> a.<span style="color:#66d9ef">space</span> <span style="color:#f92672">&lt;&gt;</span> <span style="color:#ae81ff">0</span> 
 </span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">AND</span> b.NAME <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;test/insert_desc&#39;</span>;
 </span></span></code></pre></div><p>可看到test数据库insert_desc表的所有索引信息
-<img src="http://img.sysummery.top/%E6%88%AA%E5%B1%8F2019-11-21%E4%B8%8B%E5%8D%884.44.31.jpg" alt=""></p>
+<img src="https://img.sysummery.top/%E6%88%AA%E5%B1%8F2019-11-21%E4%B8%8B%E5%8D%884.44.31.jpg" alt=""></p>
 <p>可以看到第一行是主键索引，他的根页在表空间的第三页。resblock_id是一个普通的索引，他的根页在表空间的第四页。使用</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>hexdump -s <span style="color:#ae81ff">49216</span> -n <span style="color:#ae81ff">10</span> insert_asc.ibd
 </span></span></code></pre></div><p>可以看到表insert_asc.ibd主键索引的高度。
-<img src="http://img.sysummery.top/%E6%88%AA%E5%B1%8F2019-11-21%E4%B8%8B%E5%8D%885.00.59.jpg" alt="">
+<img src="https://img.sysummery.top/%E6%88%AA%E5%B1%8F2019-11-21%E4%B8%8B%E5%8D%885.00.59.jpg" alt="">
 可以看到前两个字节是2，因此高度是3因为高度是从0开始算的。</p>
 <p><code>-s 49216</code>表示从表空间文件的49216字节的偏移量开始读取，为什么是49216？因为主键索引的是在第三页,<code>49216=16kb*3+64</code>,其中16kb是数据页的大小。同理resblock_id的索引高度读取方法是</p>
 <pre tabindex="0"><code>hexdump -s 65600 -n 10 insert_asc.ibd
 </code></pre><p>得到的结果是
-<img src="http://img.sysummery.top/%E6%88%AA%E5%B1%8F2019-11-21%E4%B8%8B%E5%8D%885.04.23.jpg" alt=""></p>
+<img src="https://img.sysummery.top/%E6%88%AA%E5%B1%8F2019-11-21%E4%B8%8B%E5%8D%885.04.23.jpg" alt=""></p>
 <p>也就是改索引的高度是1.</p>
       </section>
 

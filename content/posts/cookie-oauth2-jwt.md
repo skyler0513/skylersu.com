@@ -2,7 +2,7 @@
 title: 从Cookie到OAuth2再到JWT
 date: 2019-08-15 17:00:39
 lastmod: 2019-08-15 17:00:39
-cover: http://img.sysummery.top/jwt.jpeg
+cover: https://img.sysummery.top/jwt.jpeg
 tags:
    - cookie
    - oauth2
@@ -12,7 +12,7 @@ cookie加session认证是比较传统的方法，但是随着分布式系统的�
 <!--more-->
 ## Cookie认证
 Cookie认证是每次客户端向服务器请求的时候都会在http报文的header中传送一个字段叫Cookie，他的格式是形如这样的
-![](http://img.sysummery.top/cookie.jpg)
+![](https://img.sysummery.top/cookie.jpg)
 以分号分隔，比如Cookie:a=b;c=d, 那么到达服务器以后以php为例会有一个全局能访问的数组$\_COOKIE保存这两个键值对。
 ```php
 $var_a = $_COOKIE['a'] //值为b
@@ -21,7 +21,7 @@ $var_c = $_COOKIE['c'] //值为d
 
 Cookie并不是专门用来认证的，实时上他是用来和服务器交换数据的。因为http协议是无状态的，因此每次服务器返回给客户端的时候在返回的header里面会告诉浏览器保存哪些信息，然后再次请求这个域名的时候要带上这些信息，通过这种形式来模拟“有状态”。
 
-![](http://img.sysummery.top/setcookie.jpg)
+![](https://img.sysummery.top/setcookie.jpg)
 
 所以Cookie认证就是在发送的Cookie里面放一个用于表示认证的字段，这个字段的值就是一个凭证，这个凭证就像一把钥匙，能够与服务器上的“数据”相联系，这个数据叫做session。当服务器获得了浏览器传过来的“钥匙”的时候就会通过这把钥匙去找相应的session数据，session数据在哪？有可能在本机的文件系统，也有可能是在redis集群里面。使用redis的好处除了读取和写入的速度要快于文件之外还有一个就是对分布式系统支持良好。假如你的一个服务有a,b,c三台服务器，第一次请求负载均衡到了a机器上，理应session文件应该存储到a服务器的一个文件夹中，第二次负载到了b机器上，这时候b机器没有相应的文件，之前写到a机器上的数据就不见了。服务器获取到session数据后会加载到$\_SESSION超全局数组中。
 
@@ -31,7 +31,7 @@ Cookie并不是专门用来认证的，实时上他是用来和服务器交换�
 OAuth2的应用场景是第三方应用授权登录：在APP或者网页接入一些第三方应用时，时常会需要用户登录另一个合作平台，比如QQ，微博，微信的授权登录,第三方应用通过oauth2方式获取用户信息。
 
 他的流程图大致如下
-![](http://img.sysummery.top/oauth2.png)
+![](https://img.sysummery.top/oauth2.png)
 
 1. 用户访问一个网站A，并在网站的登陆页面选择使用"微信"登陆。
 2. 客户端扫描微信登陆的二维码，此时A网站向微信服务器发起授权请求，这个请求里面会告诉微信服务器哪个微信用户想使用微信信息登陆A网站。

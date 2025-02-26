@@ -2,7 +2,7 @@
 title: Nginx学习笔记
 date: 2019-08-04 09:04:05
 lastmod: 2019-08-04 09:04:05
-cover: http://img.sysummery.top/nginx_cover.jpeg
+cover: https://img.sysummery.top/nginx_cover.jpeg
 
 tags:
   - nginx
@@ -13,7 +13,7 @@ Nginx 是一个免费、开源、高性能、轻量级的 HTTP 和反向代理�
 ## nginx的架构
 Nginx 里有一个 master 进程和多个 worker 进程。master 进程并不处理网络请求，主要负责调度工作进程：加载配置、启动工作进程及非停升级。worker 进程负责处理网络请求与响应。
 
-![](http://img.sysummery.top/nginx_process.png)
+![](https://img.sysummery.top/nginx_process.png)
 
 master进程主要用来管理worker进程，具体包括如下4个主要功能：
 
@@ -164,7 +164,7 @@ http{
     server{
         listen 80; 
         location / {            
-            proxy_pass http://myproject;
+            proxy_pass https://myproject;
         }
 
    }
@@ -183,7 +183,7 @@ http{
     server{
         listen 80; 
         location / {            
-            proxy_pass http://myproject;
+            proxy_pass https://myproject;
         }
 
    }
@@ -203,7 +203,7 @@ http{
     server{
         listen 80; 
         location / {            
-            proxy_pass http://myproject;
+            proxy_pass https://myproject;
         }
 
    }

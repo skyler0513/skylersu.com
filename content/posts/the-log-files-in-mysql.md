@@ -50,7 +50,7 @@ bin log 的格式主要有三种
 ### 1.4 relay log
 在从库中会有一个专门的IO线程不断的从主库中读取bin log并把读取的内容写入relay log中。然后会有另外的线程会将新产生的relay log重放到从库中。主从复制的流程大致为
 
-![](http://img.sysummery.top/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_cde5d8b5-3035-4efa-bb0b-367394045f75.png)
+![](https://img.sysummery.top/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_cde5d8b5-3035-4efa-bb0b-367394045f75.png)
 ### 2.1 redo log
 存在于共享表空间中，是**物理日志**，记录的是一个事务中数据页的变化信息，不是某行的数据的变化信息。
 
