@@ -1,0 +1,11 @@
+<div>
+  {{ if site.Params.siteStartYear }}
+  <p>
+    © {{ if eq now.Year site.Params.siteStartYear }}{{ now.Year }}{{ else }}{{ site.Params.siteStartYear }} - {{
+    now.Year }}{{ end }} {{ site.Title }} | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  {{ else }}
+  <p>© {{ now.Year }} {{ site.Title }} </p>
+
+  {{ end }}
+</div>

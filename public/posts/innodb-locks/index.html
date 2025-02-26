@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innodb中的锁 | 🌱 夏天的海风</title>
+
+    
+<link href="http://img.sysummery.top/logo.png" rel="icon" type="image/x-icon" />
+
+
+<link rel="canonical" href="http://localhost:1313/posts/innodb-locks/" />
+
+
+
+<meta name="author" content="Skyler" />
+<meta name="description" content="从粒度上来分可以分为行锁、页锁、表锁; 从“性格”上分可以分为乐观锁与悲观锁; 从粒度上的分类应该很容易理解，不再敖述。所以是说说锁在性格上的分类。
+" />
+
+
+<meta name="keywords" content="Mysql,Innodb">
+
+
+
+<meta name="generator" content="Hugo 0.144.2">
+
+
+<meta property="og:url" content="http://localhost:1313/posts/innodb-locks/">
+  <meta property="og:site_name" content="🌱 夏天的海风">
+  <meta property="og:title" content="Innodb中的锁">
+  <meta property="og:description" content="从粒度上来分可以分为行锁、页锁、表锁; 从“性格”上分可以分为乐观锁与悲观锁; 从粒度上的分类应该很容易理解，不再敖述。所以是说说锁在性格上的分类。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2019-12-07T11:47:11+00:00">
+    <meta property="article:modified_time" content="2019-12-07T11:47:11+00:00">
+    <meta property="article:tag" content="Mysql">
+    <meta property="article:tag" content="Innodb">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Innodb中的锁">
+  <meta name="twitter:description" content="从粒度上来分可以分为行锁、页锁、表锁; 从“性格”上分可以分为乐观锁与悲观锁; 从粒度上的分类应该很容易理解，不再敖述。所以是说说锁在性格上的分类。">
+
+
+
+
+<link rel="stylesheet" href="/css/output.css" />
+
+
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between px-4">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:online" @click="flip = !flip" title="Flip it!">
+        <div class="h-10 rounded-full">
+          <img src="http://img.sysummery.top/logo.png" alt="🌱 夏天的海风" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="http://localhost:1313/" class="text-lg font-semibold cursor-pointer">
+          🌱 夏天的海风
+        </a>
+        
+        
+        <div class="text-base-content/60 text-sm">怀念那些个过去的夏天</div>
+        
+      </div>
+      
+    </section>
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-[1] shadow-md">
+        
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="About">
+    <ion-icon name="information-circle"></ion-icon>About</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="Archives">
+    <ion-icon name="archive"></ion-icon>
+    Archives
+  </a>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="All Tags">
+    <ion-icon name="pricetags"></ion-icon>
+    All Tags
+  </a>
+</li>
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+      
+      
+      <div role="link" tabindex="0"
+        class="text-sm font-semibold cursor-pointer hover:underline"
+        @click="flip = !flip"
+        title="About"
+      >About</div>
+      
+      
+
+      
+      
+        
+      
+
+      
+
+      
+      
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="Archives">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="All Tags">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+<div class="lg:grid lg:grid-cols-4 gap-4 mt-4 px-4">
+  <div class="hidden lg:block"></div>
+
+  <div class="lg:col-span-2">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
+      
+  <meta itemprop="name" content="Innodb中的锁">
+  <meta itemprop="description" content="从粒度上来分可以分为行锁、页锁、表锁; 从“性格”上分可以分为乐观锁与悲观锁; 从粒度上的分类应该很容易理解，不再敖述。所以是说说锁在性格上的分类。">
+  <meta itemprop="datePublished" content="2019-12-07T11:47:11+00:00">
+  <meta itemprop="dateModified" content="2019-12-07T11:47:11+00:00">
+  <meta itemprop="wordCount" content="297">
+  <meta itemprop="keywords" content="Mysql,Innodb">
+
+      <header>
+        <h1 itemprop="headline">Innodb中的锁</h1>
+        <p class="text-sm">
+          
+            <span data-format="luxon">2019-12-07T11:47:11Z</span>
+          
+
+          | <span>2 minute read</span>
+
+          
+          | <span>Updated at
+            
+              <span data-format="luxon">2019-12-07T11:47:11Z</span>
+            </span>
+          
+        </p>
+        <div class="flex justify-between">
+          <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    <span itemprop="name">Skyler</span>
+  
+  </span>
+</div>
+
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+  
+    
+  
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://x.com/intent/post?text=Innodb%e4%b8%ad%e7%9a%84%e9%94%81&amp;url=http://localhost:1313/posts/innodb-locks/" target="_blank" rel="noopener noreferrer"
+      title="Share on X">
+      <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://facebook.com/sharer/sharer.php?u=http://localhost:1313/posts/innodb-locks/" target="_blank" rel="noopener noreferrer"
+      title="Share on Facebook">
+      <ion-icon class="group-hover:text-primary-content" name="logo-facebook"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://wa.me/?text=Innodb%e4%b8%ad%e7%9a%84%e9%94%81%20http://localhost:1313/posts/innodb-locks/" target="_blank" rel="noopener noreferrer"
+      title="Share on WhatsApp">
+      <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
+    </a>
+  
+
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      <section id="dream-single-post-content" itemprop="articleBody">
+        
+
+        <p>从粒度上来分可以分为<strong>行锁</strong>、<strong>页锁</strong>、<strong>表锁</strong>; 从“性格”上分可以分为<strong>乐观锁</strong>与<strong>悲观锁</strong>; 从粒度上的分类应该很容易理解，不再敖述。所以是说说锁在性格上的分类。</p>
+<h1 id="1-锁的分类">1. 锁的分类</h1>
+<h2 id="11-乐观锁">1.1 乐观锁</h2>
+<p>用数据版本记录机制实现，是实现乐观锁的最常用的方式。每次取出一条数据的时候同时也会读取出这行数据的版本version；每次更新数据的时候也会把相应的版本version加一。如果更新的时候发现数据的版本号与第一次取出来的不一样，那么肯定是有别的事务更新了数据，就不更新；如果前后版本号一样，则更新。</p>
+<h2 id="12-悲观锁">1.2 悲观锁</h2>
+<h3 id="121-共享锁">1.2.1 共享锁</h3>
+<p>简称s锁，可以允许用户并发的读取数据。共享锁之间可以兼容，共享锁与排它锁不兼容</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#f92672">#</span> <span style="color:#960050;background-color:#1e0010">行粒度的共享锁</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> students <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">share</span> <span style="color:#66d9ef">mode</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">#</span> <span style="color:#960050;background-color:#1e0010">表粒度的共享锁</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">lock</span> <span style="color:#66d9ef">table</span> students <span style="color:#66d9ef">read</span>;
+</span></span></code></pre></div><h3 id="122-排它锁">1.2.2 排它锁</h3>
+<p>简称x锁，排它锁之间不兼容，排它锁与共享锁也不兼容</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#f92672">#</span> <span style="color:#960050;background-color:#1e0010">行粒度的排它锁</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> students <span style="color:#66d9ef">where</span> id<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">update</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">#</span> <span style="color:#960050;background-color:#1e0010">表粒度的排他锁</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">lock</span> <span style="color:#66d9ef">table</span> students <span style="color:#66d9ef">write</span>;
+</span></span></code></pre></div><p><strong>需要注意的是，如果在一个事务里面锁住了一张表，即使事务提交了表锁仍然存在必须手动调用</strong><code>unlock tables</code><strong>命令释放表锁。</strong></p>
+<h1 id="2-innodb中的锁">2. innodb中的锁</h1>
+<p>根据上面锁的分类，我们可以立马知道innodb里面有<strong>共享行锁</strong>、<strong>共享表锁</strong>、<strong>排他行锁</strong>、<strong>排他表锁</strong>。</p>
+<h2 id="21-innodb中的行锁">2.1 innodb中的行锁</h2>
+<p>行锁有时候锁住的可能不止是一行而是一个<strong>间隙</strong>。按行锁锁住的范围来说可以分为三种</p>
+<ul>
+<li>Record Lock 单个行记录上的锁，只锁住一行</li>
+<li>Gap Lock 锁住两个边界值之间的间隙，但是不包括两个边界值</li>
+<li>Next-Key Lock 锁住一个间隙和间隙的右边界</li>
+</ul>
+<p>**行锁是通过锁住索引的方式来锁住记录的。**如果在一个事务中使用<code>select ... for update</code>或者<code>select ... in share mode</code>显示的获取行锁的时候，如果查询没有命中索引，那么会锁住整张表！因此下面我们从索引的角度并且事务的隔离级别为Repeatable Read下的情况来研究行锁是怎么工作的。</p>
+<h3 id="211-主键唯一索引">2.1.1 主键（唯一）索引</h3>
+<p>一般在查询的条件使用了主键索引或者唯一索引的值去查询的时候只会为查找到的记录上锁。比如直接用主键去获取一条数据</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> students <span style="color:#66d9ef">where</span> id<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span> <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">update</span>;
+</span></span></code></pre></div><p>如果是in查询比如</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> students <span style="color:#66d9ef">where</span> id <span style="color:#66d9ef">in</span> (<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">20</span>,<span style="color:#ae81ff">30</span>) <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">update</span>;
+</span></span></code></pre></div><p>也会锁住匹配的行数据不会锁住任何的间隙
+但是如果是主键或唯一索引的范围查询那么不仅会锁住一行数据还会锁住一个间隙，比如我有一张score表
+<img src="http://img.sysummery.top/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_c712bf1b-119b-4309-ab36-0251fa0538ae.png" alt="">
+里面只有两条数据id分别为35和37</p>
+<table>
+  <thead>
+      <tr>
+          <th>事务1</th>
+          <th>事务2</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>select * from score where id&gt;=35 and id&lt;37 for update;</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>select * from score where id=35 for update;(这条sql语句被阻塞，说明id=35的数据被Record Lock锁住了)</td>
+      </tr>
+      <tr>
+          <td>commit；(提交事务释放锁)</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>由于事务1提交了，相应的锁也释放了，事务2阻塞结束</td>
+      </tr>
+      <tr>
+          <td>begin；</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td>select * from score where id&gt;=35 and id&lt;37 for update;（与之前的sql是相同的）</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>select * from score where id=37 for update;(这条sql语句没有被阻塞，说明id=37的数据没有被Record Lock锁住)</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>insert into score(id,student_id,subject_id,score)value(36,1,1,90);(这条sql语句被阻塞了，因为id=36位于id=35和id=37之间)</td>
+      </tr>
+      <tr>
+          <td>commit；</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>阻塞结束，成功插入了语句</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>commit；</td>
+      </tr>
+  </tbody>
+</table>
+<p>结论</p>
+<ul>
+<li>如果只是使用一个或者几个主键（或者唯一索引）获取锁的时候，只会锁住记录不会锁住间隙</li>
+<li>如果是使用主键或者唯一索引范围查询，会锁住这两个值之间的间隙（Gap Lock）。锁不锁住边界值取决于查询里面有没有等于边界值</li>
+</ul>
+<h3 id="212-普通索引">2.1.2 普通索引</h3>
+<p>现在score表变成了这样</p>
+<p><img src="http://img.sysummery.top/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_96c4d877-3f2e-4bd2-a3cd-486e2233b1ea.png" alt=""></p>
+<table>
+  <thead>
+      <tr>
+          <th>事务1</th>
+          <th>事务2</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>begin;</td>
+          <td>begin;</td>
+      </tr>
+      <tr>
+          <td>select * from score where score=87 for update;</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>insert into score(id,student_id,subject_id,score)value(7,1,7,86);（sql被阻塞）</td>
+      </tr>
+      <tr>
+          <td>commit;</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>阻塞结束，成功插入了数据；</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>rollback;（不保存插入的结果）</td>
+      </tr>
+      <tr>
+          <td>begin;</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td>select * from score where score=87 for update;（与上一条sql一样）</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>insert into score(id,student_id,subject_id,score)value(8,1,7,88);（sql被阻塞）</td>
+      </tr>
+      <tr>
+          <td>commit;</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>阻塞结束，成功插入了数据；</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>rollback；(不保存插入的结果)</td>
+      </tr>
+      <tr>
+          <td>begin;</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td>select * from score where score=87 for update;（与上一条sql一样）</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>insert into score(id,student_id,subject_id,score)value(10,2,2,89);（没有被阻塞插入成功）</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>insert into score(id,student_id,subject_id,score)value(11,2,2,84);（没有被阻塞插入成功）</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>select * from score where id=2 for update;(sql被阻塞)</td>
+      </tr>
+      <tr>
+          <td>commit;</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>阻塞结束</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>commit;</td>
+      </tr>
+  </tbody>
+</table>
+<p>结论</p>
+<ul>
+<li>当使用普通索引（score=87）获取锁的时候首先会在索引值的上区间加上一个Next-Key Lock锁，即锁住(84,87]这个区间，同时会为下区间加上一个Gap Lock，即锁住(84,89)这个区间</li>
+<li>使用普通索引，同时会使用Record Lock锁住主键索引。这可能也是因为所有的非主键索引的查询最后都会转化成使用主键索引查询，因为innodb的数据是在主键索引的叶子节点上。</li>
+</ul>
+<h2 id="22-innodb中的表锁">2.2 innodb中的表锁</h2>
+<p>innodb除了拥有mysql数据库级别的表锁外，还有另外两个表锁</p>
+<ul>
+<li>意向共享锁</li>
+<li>意向排它锁</li>
+</ul>
+<p>这两个表锁有啥作用？设想一下当我想给一张表加一个排他锁的时候，那么我得检查以下三项</p>
+<ol>
+<li>该表有没有共享锁</li>
+<li>该表有没有排它锁</li>
+<li>该表的某（几）条记录有没有共享锁</li>
+<li>该表的某（几）条记录有没有排它锁</li>
+</ol>
+<p>这其中1和2是比较好确定的，但是3、4怎么确定？锁是属于一个事务的不是属于一张表的，难道一条条数据的检查？显然是不行的，意向锁就应运而生。看一下意向锁与其他锁的兼容情况</p>
+<table>
+  <thead>
+      <tr>
+          <th></th>
+          <th>意向共享锁</th>
+          <th>意向排它锁</th>
+          <th>行级共享锁</th>
+          <th>行级排它锁</th>
+          <th>表级共享锁</th>
+          <th>表级排它锁</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>意向共享锁</td>
+          <td>兼容</td>
+          <td>兼容</td>
+          <td>兼容</td>
+          <td>兼容</td>
+          <td>兼容</td>
+          <td>互斥</td>
+      </tr>
+      <tr>
+          <td>意向排它锁</td>
+          <td>兼容</td>
+          <td>兼容</td>
+          <td>兼容</td>
+          <td>兼容</td>
+          <td>互斥</td>
+          <td>互斥</td>
+      </tr>
+  </tbody>
+</table>
+<p>意向锁与意向锁、行级锁都是兼容的。表级锁中只与共享锁兼容。好像意向锁就是为了&quot;抵抗&quot;表级锁而生。</p>
+<p>意向锁的添加是innodb来完成的，我们没有办法干预。举个例子，事务1想为数据a加了一个排它锁，那么在为这行数据加锁前会为整张表加一张<strong>意向排它锁</strong>，这时事务2想为数据b加一个共享锁，那么会先为表加一个意向共享锁，因为意向锁之间兼容，所以事务2不会阻塞，共享锁也会加到数据b上。这时事务3想为整个数据表加一个表级的排他锁，因为表级排它锁与意向锁相排斥所以事务3会被阻塞，直至事务1和事务2提交或者回滚。</p>
+<h1 id="3-innodb中的事务与锁">3. innodb中的事务与锁</h1>
+<p>之前在2.1.1和2.2.2中讨论的内容在事务中同样适用。正式因为Gap Lock和Next-Key Lock的存在才会使innodb在Repeatable Read下能够避免幻读。</p>
+<h2 id="31-一致性非锁定度">3.1 一致性非锁定度</h2>
+<p>也叫快照读。在一个事务中同一个查询得到的结果总是相同的。这个是因为数据读取的是数据的一个版本。这个版本可能是表中的数据（最新的版本），也可能是undo log中的该行的一个历史版本。读取的时候是不会加任何的锁。比如</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> score;
+</span></span></code></pre></div><p>那么什么时候直接读取表的记录？又什么时候去undo log找历史版本呢？这与最后更改数据的事务id与当前活跃的事务id数组的关系决定的</p>
+<ol>
+<li>如果最后修改数据行的事务id比所有的活跃的事务id都小，那么这行数据对当前事务是可见的</li>
+<li>如果最后修改数据行的事务id比所有活跃的事务id大，那么是不可见的要去undo log中找合适的版本</li>
+<li>如果等于当前事务的id，当然是可见的</li>
+<li>如果即不大于也不小于，那么要遍历活跃事务id数组如果最后修改数据行的事务id在这里面就对当前事务不可见，如果不在说明已经commit了就可见</li>
+</ol>
+<h2 id="32-一致性锁定读">3.2 一致性锁定读</h2>
+<p>也叫当前读。当事务中执行 select&hellip;for update, insert, update, delete操作的时候读取的就是数据表当前的数据（最新的版本）并同时加上行级排它锁。</p>
+<h1 id="4-自增锁">4. 自增锁</h1>
+<p>自增锁不是innodb独有的，很多存储引擎都可以为一张表的某一列设置成auto increment，innodb也不例外。因为平时工作中所有表的id都是auto increment的，因此想学习一下自增锁。</p>
+<p>一个参数innodb_autoinc_lock_mode控制着在向auto_increment列的表插入数据时，相关的锁行为。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">show</span>  variables <span style="color:#66d9ef">like</span> <span style="color:#e6db74">&#39;innodb_autoinc_lock_mode&#39;</span>
+</span></span></code></pre></div><p>这个参数有三个值</p>
+<ul>
+<li>0，这个模式下在插入语句开始的时候会得到一个表级别的锁，语句结束则释放。<strong>注意：是语句开始的时候加锁结束的时候释放锁</strong></li>
+<li>1，这个是mysql默认的值，可以理解成插入的时候先锁住这个“自增值”，然后拿到这个自增值作为插入记录的id，然后再把这个自增值的值加一，最后释放锁。</li>
+<li>2，没有锁</li>
+</ul>
+      </section>
+
+      
+      <div class="divider"></div>
+      <div class="flex flex-col md:flex-row justify-between gap-4 py-4">
+        
+        <a class="group btn btn-outline" href="/posts/go-array-str-slice/" title="Go语言中的数组、字符串、切片">
+          <ion-icon name="chevron-back"></ion-icon>
+          <div class="inline-flex flex-col items-start">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">Previous page</span>
+            <span class="max-w-48 truncate">Go语言中的数组、字符串、切片</span>
+          </div>
+        </a>
+        
+
+        
+        <a class="group btn btn-outline" href="/posts/innodb/" title="Innodb存储引擎">
+          <div class="inline-flex flex-col items-end">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">Next page</span>
+            <span class="max-w-48 truncate">Innodb存储引擎</span>
+          </div>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </a>
+        
+      </div>
+      
+
+      
+    </article>
+  </div>
+
+  <div class="hidden lg:flex lg:flex-col lg:items-end">
+    
+
+    
+  </div>
+</div>
+
+
+            
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="dream-grid dream-grid-about">
+  
+  
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">About Me</div>
+
+        <div class="prose dark:prose-invert">
+          <p>我是一个喜欢足球的飞行员！</p>
+<p>骗你的啦，⚽️和✈️只是我的理想啦，我目前是个喜欢🍺的程序员！我的中文名叫，还是算了吧。。。一个无名之辈而已，如果非要称呼可以叫我Skyler.
+我是天津人，但是对于青岛和深圳这两座城市有很深的感情，我目前在帝都，很感谢你能看完About Me !</p>
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+
+            
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme = "forest"
+</script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+
+  
+  
+  <script src="/js/grid.js"></script>
+
+
+
+
+<script src="/js/main.js"></script>
+
+    
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/luxon@1.26.0"
+  integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0="
+  crossorigin="anonymous"
+></script>
+<script>
+  format()
+
+  function format() {
+    document.querySelectorAll('span[data-format="luxon"]').forEach(el => {
+      const date = el.textContent
+
+      el.textContent = luxon.DateTime.fromISO(date, { locale: "en" }).toFormat("yyyy年MM月dd日")
+    })
+  }
+</script>
+
+
+
+
+
+
+  
+    <script type="module">
+      import mediumZoom from 'https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/+esm';
+      mediumZoom('#dream-single-post-content img')
+    </script>
+  
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>

@@ -1,0 +1,74 @@
+baseurl = "https://example.com"
+defaultContentLanguage = "en"
+languageCode = "en"
+title = "🌱 夏天的海风"
+theme = "dream"
+
+[services]
+[services.disqus]
+shortname = ""
+# [services.googleAnalytics]
+# ID = ""
+
+[params]
+# zenMode = true
+
+lightTheme = "emerald"
+darkTheme = "forest"
+
+# backgroundImage = "me/background.jpg"
+# backgroundImageDark = ""
+
+author = "Skyler"
+#description = "啊啊啊啊啊啊啊"
+avatar = "http://img.sysummery.top/logo.png"
+headerTitle = "🌱 夏天的海风"
+motto = "怀念那些个过去的夏天"
+
+#footerBottomText = "底部的文案"
+#rss = true
+
+# utterancesRepo = ""
+
+# valine = true
+# LEANCLOUD_APP_ID = ""
+# LEANCLOUD_APP_KEY = ""
+
+# waline = true
+# walineServer = ""
+
+# email = ""
+
+siteStartYear = 2019
+
+favicon = "http://img.sysummery.top/logo.png"
+
+# Syntax highlighting
+# customSyntaxHighlighting = true
+
+# options
+stickyNav = false
+reorderNavItems = ["search", "rss", "posts", "categories", "tags"]
+#collapseNavItems = ["posts", "categories", "tags"]
+# noDefaultSummaryCover = true
+# showTableOfContents = true
+# showSummaryCoverInPost = true
+imageZoomableInPost = true
+showPrevNextPost = true
+reorderShares = ["x", "facebook", "whatsapp"]
+
+# [params.navItems]
+
+# [params.twikoo]
+# enabled = true
+# envID = ""
+# region = ""
+# lang = ""
+
+# [params.advanced]
+# customCSS = ["css/custom.css"]
+# customJS = []
+
+[params.experimental]
+jsDate = true
+jsDateFormat = "yyyy年MM月dd日"

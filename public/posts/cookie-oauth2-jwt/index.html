@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>从Cookie到OAuth2再到JWT | 🌱 夏天的海风</title>
+
+    
+<link href="http://img.sysummery.top/logo.png" rel="icon" type="image/x-icon" />
+
+
+<link rel="canonical" href="http://localhost:1313/posts/cookie-oauth2-jwt/" />
+
+
+
+<meta name="author" content="Skyler" />
+<meta name="description" content="cookie加session认证是比较传统的方法，但是随着分布式系统的出现，这种认证方式局限性就渐渐显露出来了。OAuth2认证主要是用于使用公共平台的身份去登陆第三方网站。JWT是一种简单的认证方式，适合分布式系统。今天想总结一下工作几年来使用的三种认证方式
+" />
+
+
+<meta name="keywords" content="Cookie,Oauth2,Jwt">
+
+
+
+<meta name="generator" content="Hugo 0.144.2">
+
+
+<meta property="og:url" content="http://localhost:1313/posts/cookie-oauth2-jwt/">
+  <meta property="og:site_name" content="🌱 夏天的海风">
+  <meta property="og:title" content="从Cookie到OAuth2再到JWT">
+  <meta property="og:description" content="cookie加session认证是比较传统的方法，但是随着分布式系统的出现，这种认证方式局限性就渐渐显露出来了。OAuth2认证主要是用于使用公共平台的身份去登陆第三方网站。JWT是一种简单的认证方式，适合分布式系统。今天想总结一下工作几年来使用的三种认证方式">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2019-08-15T17:00:39+00:00">
+    <meta property="article:modified_time" content="2019-08-15T17:00:39+00:00">
+    <meta property="article:tag" content="Cookie">
+    <meta property="article:tag" content="Oauth2">
+    <meta property="article:tag" content="Jwt">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="从Cookie到OAuth2再到JWT">
+  <meta name="twitter:description" content="cookie加session认证是比较传统的方法，但是随着分布式系统的出现，这种认证方式局限性就渐渐显露出来了。OAuth2认证主要是用于使用公共平台的身份去登陆第三方网站。JWT是一种简单的认证方式，适合分布式系统。今天想总结一下工作几年来使用的三种认证方式">
+
+
+
+
+<link rel="stylesheet" href="/css/output.css" />
+
+
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between px-4">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:online" @click="flip = !flip" title="Flip it!">
+        <div class="h-10 rounded-full">
+          <img src="http://img.sysummery.top/logo.png" alt="🌱 夏天的海风" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="http://localhost:1313/" class="text-lg font-semibold cursor-pointer">
+          🌱 夏天的海风
+        </a>
+        
+        
+        <div class="text-base-content/60 text-sm">怀念那些个过去的夏天</div>
+        
+      </div>
+      
+    </section>
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-[1] shadow-md">
+        
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="About">
+    <ion-icon name="information-circle"></ion-icon>About</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="Archives">
+    <ion-icon name="archive"></ion-icon>
+    Archives
+  </a>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="All Tags">
+    <ion-icon name="pricetags"></ion-icon>
+    All Tags
+  </a>
+</li>
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+      
+      
+      <div role="link" tabindex="0"
+        class="text-sm font-semibold cursor-pointer hover:underline"
+        @click="flip = !flip"
+        title="About"
+      >About</div>
+      
+      
+
+      
+      
+        
+      
+
+      
+
+      
+      
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="Archives">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="All Tags">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+<div class="lg:grid lg:grid-cols-4 gap-4 mt-4 px-4">
+  <div class="hidden lg:block"></div>
+
+  <div class="lg:col-span-2">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
+      
+  <meta itemprop="name" content="从Cookie到OAuth2再到JWT">
+  <meta itemprop="description" content="cookie加session认证是比较传统的方法，但是随着分布式系统的出现，这种认证方式局限性就渐渐显露出来了。OAuth2认证主要是用于使用公共平台的身份去登陆第三方网站。JWT是一种简单的认证方式，适合分布式系统。今天想总结一下工作几年来使用的三种认证方式">
+  <meta itemprop="datePublished" content="2019-08-15T17:00:39+00:00">
+  <meta itemprop="dateModified" content="2019-08-15T17:00:39+00:00">
+  <meta itemprop="wordCount" content="101">
+  <meta itemprop="keywords" content="Cookie,Oauth2,Jwt">
+
+      <header>
+        <h1 itemprop="headline">从Cookie到OAuth2再到JWT</h1>
+        <p class="text-sm">
+          
+            <span data-format="luxon">2019-08-15T17:00:39Z</span>
+          
+
+          | <span>1 minute read</span>
+
+          
+          | <span>Updated at
+            
+              <span data-format="luxon">2019-08-15T17:00:39Z</span>
+            </span>
+          
+        </p>
+        <div class="flex justify-between">
+          <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    <span itemprop="name">Skyler</span>
+  
+  </span>
+</div>
+
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+  
+    
+  
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://x.com/intent/post?text=%e4%bb%8eCookie%e5%88%b0OAuth2%e5%86%8d%e5%88%b0JWT&amp;url=http://localhost:1313/posts/cookie-oauth2-jwt/" target="_blank" rel="noopener noreferrer"
+      title="Share on X">
+      <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://facebook.com/sharer/sharer.php?u=http://localhost:1313/posts/cookie-oauth2-jwt/" target="_blank" rel="noopener noreferrer"
+      title="Share on Facebook">
+      <ion-icon class="group-hover:text-primary-content" name="logo-facebook"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://wa.me/?text=%e4%bb%8eCookie%e5%88%b0OAuth2%e5%86%8d%e5%88%b0JWT%20http://localhost:1313/posts/cookie-oauth2-jwt/" target="_blank" rel="noopener noreferrer"
+      title="Share on WhatsApp">
+      <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
+    </a>
+  
+
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      <section id="dream-single-post-content" itemprop="articleBody">
+        
+
+        <p>cookie加session认证是比较传统的方法，但是随着分布式系统的出现，这种认证方式局限性就渐渐显露出来了。OAuth2认证主要是用于使用公共平台的身份去登陆第三方网站。JWT是一种简单的认证方式，适合分布式系统。今天想总结一下工作几年来使用的三种认证方式</p>
+<h2 id="cookie认证">Cookie认证</h2>
+<p>Cookie认证是每次客户端向服务器请求的时候都会在http报文的header中传送一个字段叫Cookie，他的格式是形如这样的
+<img src="http://img.sysummery.top/cookie.jpg" alt="">
+以分号分隔，比如Cookie:a=b;c=d, 那么到达服务器以后以php为例会有一个全局能访问的数组$_COOKIE保存这两个键值对。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span>$var_a <span style="color:#f92672">=</span> $_COOKIE[<span style="color:#e6db74">&#39;a&#39;</span>] <span style="color:#75715e">//值为b
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>$var_c <span style="color:#f92672">=</span> $_COOKIE[<span style="color:#e6db74">&#39;c&#39;</span>] <span style="color:#75715e">//值为d 
+</span></span></span></code></pre></div><p>Cookie并不是专门用来认证的，实时上他是用来和服务器交换数据的。因为http协议是无状态的，因此每次服务器返回给客户端的时候在返回的header里面会告诉浏览器保存哪些信息，然后再次请求这个域名的时候要带上这些信息，通过这种形式来模拟“有状态”。</p>
+<p><img src="http://img.sysummery.top/setcookie.jpg" alt=""></p>
+<p>所以Cookie认证就是在发送的Cookie里面放一个用于表示认证的字段，这个字段的值就是一个凭证，这个凭证就像一把钥匙，能够与服务器上的“数据”相联系，这个数据叫做session。当服务器获得了浏览器传过来的“钥匙”的时候就会通过这把钥匙去找相应的session数据，session数据在哪？有可能在本机的文件系统，也有可能是在redis集群里面。使用redis的好处除了读取和写入的速度要快于文件之外还有一个就是对分布式系统支持良好。假如你的一个服务有a,b,c三台服务器，第一次请求负载均衡到了a机器上，理应session文件应该存储到a服务器的一个文件夹中，第二次负载到了b机器上，这时候b机器没有相应的文件，之前写到a机器上的数据就不见了。服务器获取到session数据后会加载到$_SESSION超全局数组中。</p>
+<p>最后说一下曾今困扰我的一个问题，就是session过期的问题。比如我的请求在10:30，服务端设立的session过期时间是30分钟，那么在11:00session应该就是过期的。但是如果我10:31再次请求的时候，服务端会认为这个session的过期时间是11:01，session的过期时间是每次请求都会更新的。</p>
+<h2 id="oauth2-认证">OAuth2 认证</h2>
+<p>OAuth2的应用场景是第三方应用授权登录：在APP或者网页接入一些第三方应用时，时常会需要用户登录另一个合作平台，比如QQ，微博，微信的授权登录,第三方应用通过oauth2方式获取用户信息。</p>
+<p>他的流程图大致如下
+<img src="http://img.sysummery.top/oauth2.png" alt=""></p>
+<ol>
+<li>用户访问一个网站A，并在网站的登陆页面选择使用&quot;微信&quot;登陆。</li>
+<li>客户端扫描微信登陆的二维码，此时A网站向微信服务器发起授权请求，这个请求里面会告诉微信服务器哪个微信用户想使用微信信息登陆A网站。</li>
+<li>微信服务器收到A网站的请求后会推送消息给用户让用户选择是否同意A网站使用用户的微信名或者微信头像等信息。网站A与微信服务器的tcp连接是一直连接着的，在http应用层面是通过不断的轮训来”保持连接“的。</li>
+<li>用户同意</li>
+<li>微信服务器会把网站A对微信服务器的请求转到A网站提前设定好的重定向地址中，同时还会附加一个code</li>
+<li>A网站通过code和A网站之前已经向微信服务器申请的app_id和app_secret向微信服务器申请调用微信用户信息接口的access_token和refresh_token。</li>
+<li>A网站使用access_token向微信的接口获取用户的用户名和头像</li>
+<li>做一些用户信息处理，比如把该用户的信息存在自己的服务器</li>
+<li>返回用户的头像和用户名给浏览器</li>
+</ol>
+<p>所以整个过程简单再说一下：先是用户选择微信登陆，然后网站A向微信服务器发起请求，微信服务器收到用户的确认后把请求重定向到网站A的服务器，网站A获取到用户的信息后返回给客户端，至此整个过程结束。</p>
+<h2 id="jwt认证">JWT认证</h2>
+<p>传统的cookie与session认证在分布式系统里显得很无力很苍白。我们当然可以使用一个redis集群来整一个分布式的session。不过，还有一个方法就是使用JWT(json web token)</p>
+<p>他的原理其实很简单，每次客户端登陆成功后，服务器都会为这个用户产生一个认证的字符串，作为之后权限认证的token并放在返回的header中。之后客户端在请求的时候会在请求的header里面附上这个jwt token。服务器收到这个token后会进行一系列的验证，然后判断token的有效性。</p>
+<p>那么这个token长得啥样字呢？如下</p>
+<pre tabindex="0"><code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ
+</code></pre><p>一个jwt的token由3部分组成，分别称作header、payload、signature。header和payload原本都是json格式的数据，他们分别经过base64编码变成两段字符串。最后将这两段字符串使用.连接起来使用一个固定的密匙和加密算法生成第三段signature。</p>
+<h3 id="header">header</h3>
+<p>jwt的头部承载两部分信息：</p>
+<ol>
+<li>声明类型，这里是jwt</li>
+<li>声明加密的算法 通常直接使用 HMAC SHA256</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;typ&#39;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;JWT&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;alg&#39;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;HS256&#39;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>然后将头部进行base64加密（该加密是可以对称解密的),构成了第一部分。</p>
+<pre tabindex="0"><code>eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9
+</code></pre><h3 id="payload">payload</h3>
+<p>载荷就是存放有效信息的地方。这个名字像是特指飞机上承载的货品，这些有效信息包含三个部分。</p>
+<ol>
+<li>标准中注册的声明</li>
+<li>公共的声明</li>
+<li>私有的声明</li>
+</ol>
+<p>标准中注册的声明 (建议但不强制使用) ：</p>
+<ol>
+<li>iss: jwt签发者</li>
+<li>sub: jwt所面向的用户</li>
+<li>aud: 接收jwt的一方</li>
+<li>exp: jwt的过期时间，这个过期时间必须要大于签发时间</li>
+<li>nbf: 定义在什么时间之前，该jwt都是不可用的.</li>
+<li>iat: jwt的签发时间</li>
+<li>jti: jwt的唯一身份标识，主要用来作为一次性token,从而回避重放攻击。</li>
+</ol>
+<p>公共的声明 ：
+公共的声明可以添加任何的信息，一般添加用户的相关信息或其他业务需要的必要信息.但不建议添加敏感信息，因为该部分在客户端可解密.</p>
+<p>私有的声明 ：
+私有声明是提供者和消费者所共同定义的声明，一般不建议存放敏感信息，因为base64是对称解密的，意味着该部分信息可以归类为明文信息。</p>
+<p>定义一个payload:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;sub&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;1234567890&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;name&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;John Doe&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;admin&#34;</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>然后将其进行base64加密，得到Jwt的第二部分。</p>
+<pre tabindex="0"><code>eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9
+</code></pre><h3 id="signature">signature</h3>
+<p>把上两步生成的字符串连接起来使用一个固定的secret和加密算法生成signature。然后把这三部分连接起来就是整个token。</p>
+<h3 id="服务器验证token">服务器验证token</h3>
+<ol>
+<li>首先先使用secret和加密算法重新对token的第一部分和第二部分加密得到signature，检查得到的signature是否与token的第三部分相同，如果不相同说明token可能是别人伪造的。</li>
+<li>解析token的payload，检查token有没有过期等信息</li>
+<li>应用层也要对token进行验证，比如payload中有没有user_id字段，如果有就可以通过user_id找当前登陆的用户，如果没有告诉客户端重新登陆。</li>
+</ol>
+<p>如果是分布式服务，那么只要每台机器的加密算法和加密secret都相同那么无论请求负载均衡到哪台机器上都是一样的。</p>
+      </section>
+
+      
+      <div class="divider"></div>
+      <div class="flex flex-col md:flex-row justify-between gap-4 py-4">
+        
+        <a class="group btn btn-outline" href="/posts/https/" title="Https">
+          <ion-icon name="chevron-back"></ion-icon>
+          <div class="inline-flex flex-col items-start">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">Previous page</span>
+            <span class="max-w-48 truncate">Https</span>
+          </div>
+        </a>
+        
+
+        
+        <a class="group btn btn-outline" href="/posts/nginx-notes/" title="Nginx学习笔记">
+          <div class="inline-flex flex-col items-end">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">Next page</span>
+            <span class="max-w-48 truncate">Nginx学习笔记</span>
+          </div>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </a>
+        
+      </div>
+      
+
+      
+    </article>
+  </div>
+
+  <div class="hidden lg:flex lg:flex-col lg:items-end">
+    
+
+    
+  </div>
+</div>
+
+
+            
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="dream-grid dream-grid-about">
+  
+  
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">About Me</div>
+
+        <div class="prose dark:prose-invert">
+          <p>我是一个喜欢足球的飞行员！</p>
+<p>骗你的啦，⚽️和✈️只是我的理想啦，我目前是个喜欢🍺的程序员！我的中文名叫，还是算了吧。。。一个无名之辈而已，如果非要称呼可以叫我Skyler.
+我是天津人，但是对于青岛和深圳这两座城市有很深的感情，我目前在帝都，很感谢你能看完About Me !</p>
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+
+            
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme = "forest"
+</script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+
+  
+  
+  <script src="/js/grid.js"></script>
+
+
+
+
+<script src="/js/main.js"></script>
+
+    
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/luxon@1.26.0"
+  integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0="
+  crossorigin="anonymous"
+></script>
+<script>
+  format()
+
+  function format() {
+    document.querySelectorAll('span[data-format="luxon"]').forEach(el => {
+      const date = el.textContent
+
+      el.textContent = luxon.DateTime.fromISO(date, { locale: "en" }).toFormat("yyyy年MM月dd日")
+    })
+  }
+</script>
+
+
+
+
+
+
+  
+    <script type="module">
+      import mediumZoom from 'https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/+esm';
+      mediumZoom('#dream-single-post-content img')
+    </script>
+  
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>

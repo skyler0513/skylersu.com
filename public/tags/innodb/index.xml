@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Innodb on 🌱 夏天的海风</title>
+    <link>http://localhost:1313/tags/innodb/</link>
+    <description>Recent content in Innodb on 🌱 夏天的海风</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 07 Dec 2019 11:47:11 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/innodb/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Innodb中的锁</title>
+      <link>http://localhost:1313/posts/innodb-locks/</link>
+      <pubDate>Sat, 07 Dec 2019 11:47:11 +0000</pubDate>
+      <guid>http://localhost:1313/posts/innodb-locks/</guid>
+      <description>&lt;p&gt;从粒度上来分可以分为&lt;strong&gt;行锁&lt;/strong&gt;、&lt;strong&gt;页锁&lt;/strong&gt;、&lt;strong&gt;表锁&lt;/strong&gt;; 从“性格”上分可以分为&lt;strong&gt;乐观锁&lt;/strong&gt;与&lt;strong&gt;悲观锁&lt;/strong&gt;; 从粒度上的分类应该很容易理解，不再敖述。所以是说说锁在性格上的分类。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Innodb存储引擎</title>
+      <link>http://localhost:1313/posts/innodb/</link>
+      <pubDate>Tue, 03 Dec 2019 12:20:14 +0000</pubDate>
+      <guid>http://localhost:1313/posts/innodb/</guid>
+      <description>&lt;p&gt;innodb存储引擎是现在mysql的默认存储引擎，其特点是行锁设计、支持MVCC、支持外键、提供一致性非锁定读、同时被用来最有效的利用以及使用内存和CPU。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Innodb查看B&#43;tree的高度</title>
+      <link>http://localhost:1313/posts/btree-height/</link>
+      <pubDate>Thu, 21 Nov 2019 10:46:47 +0000</pubDate>
+      <guid>http://localhost:1313/posts/btree-height/</guid>
+      <description>&lt;p&gt;在innodb中无论是主键索引还是非主键索引数据结构都是B+tree。而B+tree数的高度直接决定了在不考虑缓存的情况下读取一个数据页硬盘所需的IO次数，因此B+tree的高度相当重要。生产环境下高度一般为2~3.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Mysql中的日志文件</title>
+      <link>http://localhost:1313/posts/the-log-files-in-mysql/</link>
+      <pubDate>Sun, 17 Nov 2019 08:52:53 +0000</pubDate>
+      <guid>http://localhost:1313/posts/the-log-files-in-mysql/</guid>
+      <description>&lt;p&gt;mysql中有很多重要的日志文件，这些日志文件主要可以分为两大类：服务器的日志文件以及存储引擎的日志文件。平时我们用的存储引擎都是innodb，因此今天介绍的存储引擎的日志文件也是innodb的日志文件。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
