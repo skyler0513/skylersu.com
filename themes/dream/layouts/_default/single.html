@@ -100,7 +100,7 @@
         {{ end }}
       </div>
       {{ end }}
-
+      {{ partial "comments.html" . }}
       {{ if or site.Config.Services.Disqus.Shortname site.Params.utterancesRepo site.Params.valine site.Params.waline }}
       <div class="divider"></div>
 

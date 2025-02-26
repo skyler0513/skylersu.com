@@ -72,3 +72,16 @@ reorderShares = ["x", "facebook", "whatsapp"]
 [params.experimental]
 jsDate = true
 jsDateFormat = "yyyy年MM月dd日"
+
+
+[params.page.comment]
+enable = true
+[params.page.comment.giscus]
+# You can refer to the official documentation of giscus to use the following configuration.
+# 你可以参考官方文档来使用下列配置
+enable = true
+repo = "skyler0513/skylersu.com"
+repoId = "R_kgDON_xUqw"
+category = "Announcements"
+categoryId = "DIC_kwDON_xUq84CnWa0"
+mapping = "pathname"
