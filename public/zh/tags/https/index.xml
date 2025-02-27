@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Https on 🌱 夏天的海风</title>
+    <link>http://localhost:1313/zh/tags/https/</link>
+    <description>Recent content in Https on 🌱 夏天的海风</description>
+    <generator>Hugo</generator>
+    <language>zh</language>
+    <lastBuildDate>Fri, 15 Nov 2019 14:50:20 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/zh/tags/https/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Https</title>
+      <link>http://localhost:1313/zh/posts/https/</link>
+      <pubDate>Fri, 15 Nov 2019 14:50:20 +0000</pubDate>
+      <guid>http://localhost:1313/zh/posts/https/</guid>
+      <description>&lt;p&gt;https是在应用层(http)与传输层之间多了一个SSL(TSL)层。这个层负责先将http要发送的数据使用一个密室加密之后再交给传输层。相应的，接收方的传输层先将加密的数据交给SSL(TLS)层解密后，再发送给应用层(http)。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

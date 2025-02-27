@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>🌱 夏天的海风</title>
+    <link>http://localhost:1313/en/</link>
+    <description>Recent content on 🌱 夏天的海风</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 17 Mar 2020 13:17:11 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/en/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ZooKeeper总结</title>
+      <link>http://localhost:1313/en/posts/zk-first-exploration/</link>
+      <pubDate>Tue, 17 Mar 2020 13:17:11 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/zk-first-exploration/</guid>
+      <description>&lt;p&gt;ZooKeeper是一个分布式的，开放源码的分布式应用程序协调服务，是Google的Chubby一个开源的实现，是Hadoop和Hbase的重要组件。它是一个为分布式应用提供一致性服务的软件，提供的功能包括：配置维护、域名服务、分布式同步、组服务等。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Raft协议学习笔记</title>
+      <link>http://localhost:1313/en/posts/raft-note/</link>
+      <pubDate>Sun, 15 Mar 2020 21:03:50 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/raft-note/</guid>
+      <description>&lt;p&gt;raft也是分布式系统的一个共识算法，号称比paxos更容易理解。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Basic Paxos 与 Multi Paxos</title>
+      <link>http://localhost:1313/en/posts/paxos/</link>
+      <pubDate>Sat, 14 Mar 2020 22:25:13 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/paxos/</guid>
+      <description>&lt;p&gt;Paxos算法是Leslie Lamport于1990年提出的一种基于消息传递且具有高度容错特性的一致性算法，是目前公认的解决分布式一致性问题最有效的算法之一。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Go语言中的锁</title>
+      <link>http://localhost:1313/en/posts/go-lock/</link>
+      <pubDate>Wed, 15 Jan 2020 14:57:01 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/go-lock/</guid>
+      <description>&lt;p&gt;总结一下这段时间学习的有关go语言中的锁的知识。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Go语言中的垃圾回收</title>
+      <link>http://localhost:1313/en/posts/go-gc/</link>
+      <pubDate>Wed, 01 Jan 2020 17:37:50 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/go-gc/</guid>
+      <description>&lt;p&gt;垃圾回收（英语：Garbage Collection，缩写为GC），在计算机科学中是一种自动的存储器管理机制。当一个计算机上的动态存储器不再需要时，就应该予以释放，以让出存储器，这种存储器资源管理，称为垃圾回收。垃圾回收器可以让程序员减轻许多负担，也减少程序员犯错的机会。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Go语言中的数组、字符串、切片</title>
+      <link>http://localhost:1313/en/posts/go-array-str-slice/</link>
+      <pubDate>Mon, 23 Dec 2019 12:18:35 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/go-array-str-slice/</guid>
+      <description>&lt;p&gt;之所以把他们三个放一起是因为他们3个的底层的原始数据有着一样的数据结构。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Innodb中的锁</title>
+      <link>http://localhost:1313/en/posts/innodb-locks/</link>
+      <pubDate>Sat, 07 Dec 2019 11:47:11 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/innodb-locks/</guid>
+      <description>&lt;p&gt;从粒度上来分可以分为&lt;strong&gt;行锁&lt;/strong&gt;、&lt;strong&gt;页锁&lt;/strong&gt;、&lt;strong&gt;表锁&lt;/strong&gt;; 从“性格”上分可以分为&lt;strong&gt;乐观锁&lt;/strong&gt;与&lt;strong&gt;悲观锁&lt;/strong&gt;; 从粒度上的分类应该很容易理解，不再敖述。所以是说说锁在性格上的分类。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Innodb存储引擎</title>
+      <link>http://localhost:1313/en/posts/innodb/</link>
+      <pubDate>Tue, 03 Dec 2019 12:20:14 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/innodb/</guid>
+      <description>&lt;p&gt;innodb存储引擎是现在mysql的默认存储引擎，其特点是行锁设计、支持MVCC、支持外键、提供一致性非锁定读、同时被用来最有效的利用以及使用内存和CPU。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Git进阶</title>
+      <link>http://localhost:1313/en/posts/git-advance/</link>
+      <pubDate>Sun, 01 Dec 2019 12:18:22 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/git-advance/</guid>
+      <description>&lt;p&gt;以下是我在工作中总结的关于git命令的一些使用方法。比较常用的那些我都不说了，主要是一些经常用但是又经常忘的命令，因此在这里总结一下，仅供参考。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Innodb查看B&#43;tree的高度</title>
+      <link>http://localhost:1313/en/posts/btree-height/</link>
+      <pubDate>Thu, 21 Nov 2019 10:46:47 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/btree-height/</guid>
+      <description>&lt;p&gt;在innodb中无论是主键索引还是非主键索引数据结构都是B+tree。而B+tree数的高度直接决定了在不考虑缓存的情况下读取一个数据页硬盘所需的IO次数，因此B+tree的高度相当重要。生产环境下高度一般为2~3.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Mysql中的日志文件</title>
+      <link>http://localhost:1313/en/posts/the-log-files-in-mysql/</link>
+      <pubDate>Sun, 17 Nov 2019 08:52:53 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/the-log-files-in-mysql/</guid>
+      <description>&lt;p&gt;mysql中有很多重要的日志文件，这些日志文件主要可以分为两大类：服务器的日志文件以及存储引擎的日志文件。平时我们用的存储引擎都是innodb，因此今天介绍的存储引擎的日志文件也是innodb的日志文件。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Https</title>
+      <link>http://localhost:1313/en/posts/https/</link>
+      <pubDate>Fri, 15 Nov 2019 14:50:20 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/https/</guid>
+      <description>&lt;p&gt;https是在应用层(http)与传输层之间多了一个SSL(TSL)层。这个层负责先将http要发送的数据使用一个密室加密之后再交给传输层。相应的，接收方的传输层先将加密的数据交给SSL(TLS)层解密后，再发送给应用层(http)。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>从Cookie到OAuth2再到JWT</title>
+      <link>http://localhost:1313/en/posts/cookie-oauth2-jwt/</link>
+      <pubDate>Thu, 15 Aug 2019 17:00:39 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/cookie-oauth2-jwt/</guid>
+      <description>&lt;p&gt;cookie加session认证是比较传统的方法，但是随着分布式系统的出现，这种认证方式局限性就渐渐显露出来了。OAuth2认证主要是用于使用公共平台的身份去登陆第三方网站。JWT是一种简单的认证方式，适合分布式系统。今天想总结一下工作几年来使用的三种认证方式&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Nginx学习笔记</title>
+      <link>http://localhost:1313/en/posts/nginx-notes/</link>
+      <pubDate>Sun, 04 Aug 2019 09:04:05 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/nginx-notes/</guid>
+      <description>&lt;p&gt;Nginx 是一个免费、开源、高性能、轻量级的 HTTP 和反向代理服务器，也是一个电子邮件(IMAP/POP3)代理服务器，其特点是占有内存少，并发能力强。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

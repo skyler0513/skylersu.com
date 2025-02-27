@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Go on 🌱 夏天的海风</title>
+    <link>http://localhost:1313/en/tags/go/</link>
+    <description>Recent content in Go on 🌱 夏天的海风</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 15 Jan 2020 14:57:01 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/en/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go语言中的锁</title>
+      <link>http://localhost:1313/en/posts/go-lock/</link>
+      <pubDate>Wed, 15 Jan 2020 14:57:01 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/go-lock/</guid>
+      <description>&lt;p&gt;总结一下这段时间学习的有关go语言中的锁的知识。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Go语言中的垃圾回收</title>
+      <link>http://localhost:1313/en/posts/go-gc/</link>
+      <pubDate>Wed, 01 Jan 2020 17:37:50 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/go-gc/</guid>
+      <description>&lt;p&gt;垃圾回收（英语：Garbage Collection，缩写为GC），在计算机科学中是一种自动的存储器管理机制。当一个计算机上的动态存储器不再需要时，就应该予以释放，以让出存储器，这种存储器资源管理，称为垃圾回收。垃圾回收器可以让程序员减轻许多负担，也减少程序员犯错的机会。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Go语言中的数组、字符串、切片</title>
+      <link>http://localhost:1313/en/posts/go-array-str-slice/</link>
+      <pubDate>Mon, 23 Dec 2019 12:18:35 +0000</pubDate>
+      <guid>http://localhost:1313/en/posts/go-array-str-slice/</guid>
+      <description>&lt;p&gt;之所以把他们三个放一起是因为他们3个的底层的原始数据有着一样的数据结构。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

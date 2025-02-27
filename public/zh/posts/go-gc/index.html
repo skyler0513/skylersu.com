@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go语言中的垃圾回收 | 🌱 夏天的海风</title>
+
+    
+<link href="http://img.sysummery.top/logo.png" rel="icon" type="image/x-icon" />
+
+
+<link rel="canonical" href="http://localhost:1313/zh/posts/go-gc/" />
+
+
+
+<meta name="author" content="skyler" />
+<meta name="description" content="垃圾回收（英语：Garbage Collection，缩写为GC），在计算机科学中是一种自动的存储器管理机制。当一个计算机上的动态存储器不再需要时，就应该予以释放，以让出存储器，这种存储器资源管理，称为垃圾回收。垃圾回收器可以让程序员减轻许多负担，也减少程序员犯错的机会。
+" />
+
+
+<meta name="keywords" content="Go">
+
+
+
+<meta name="generator" content="Hugo 0.144.2">
+
+
+<meta property="og:url" content="http://localhost:1313/zh/posts/go-gc/">
+  <meta property="og:site_name" content="🌱 夏天的海风">
+  <meta property="og:title" content="Go语言中的垃圾回收">
+  <meta property="og:description" content="垃圾回收（英语：Garbage Collection，缩写为GC），在计算机科学中是一种自动的存储器管理机制。当一个计算机上的动态存储器不再需要时，就应该予以释放，以让出存储器，这种存储器资源管理，称为垃圾回收。垃圾回收器可以让程序员减轻许多负担，也减少程序员犯错的机会。">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-01-01T17:37:50+00:00">
+    <meta property="article:modified_time" content="2020-01-01T17:37:50+00:00">
+    <meta property="article:tag" content="Go">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go语言中的垃圾回收">
+  <meta name="twitter:description" content="垃圾回收（英语：Garbage Collection，缩写为GC），在计算机科学中是一种自动的存储器管理机制。当一个计算机上的动态存储器不再需要时，就应该予以释放，以让出存储器，这种存储器资源管理，称为垃圾回收。垃圾回收器可以让程序员减轻许多负担，也减少程序员犯错的机会。">
+
+
+
+
+<link rel="stylesheet" href="/css/output.css" />
+
+
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between px-4">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="http://img.sysummery.top/logo.png" alt="🌱 夏天的海风" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="http://localhost:1313/" class="text-lg font-semibold cursor-pointer">
+          🌱 夏天的海风
+        </a>
+        
+        
+        <div class="text-base-content/60 text-sm">怀念那些个过去的夏天</div>
+        
+      </div>
+      
+    </section>
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-[1] shadow-md">
+        
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/zh/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/zh/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+      
+      
+      <div role="link" tabindex="0"
+        class="text-sm font-semibold cursor-pointer hover:underline"
+        @click="flip = !flip"
+        title="关于"
+      >关于</div>
+      
+      
+
+      
+      
+
+      
+
+      
+      
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/zh/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/zh/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+<div class="lg:grid lg:grid-cols-4 gap-4 mt-4 px-4">
+  <div class="hidden lg:block"></div>
+
+  <div class="lg:col-span-2">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
+      
+  <meta itemprop="name" content="Go语言中的垃圾回收">
+  <meta itemprop="description" content="垃圾回收（英语：Garbage Collection，缩写为GC），在计算机科学中是一种自动的存储器管理机制。当一个计算机上的动态存储器不再需要时，就应该予以释放，以让出存储器，这种存储器资源管理，称为垃圾回收。垃圾回收器可以让程序员减轻许多负担，也减少程序员犯错的机会。">
+  <meta itemprop="datePublished" content="2020-01-01T17:37:50+00:00">
+  <meta itemprop="dateModified" content="2020-01-01T17:37:50+00:00">
+  <meta itemprop="wordCount" content="71">
+  <meta itemprop="keywords" content="Go">
+
+      <header>
+        <h1 itemprop="headline">Go语言中的垃圾回收</h1>
+        <p class="text-sm">
+          
+            <span data-format="luxon">2020-01-01T17:37:50Z</span>
+          
+
+          | <span>1分钟阅读</span>
+
+          
+          | <span>更新于
+            
+              <span data-format="luxon">2020-01-01T17:37:50Z</span>
+            </span>
+          
+        </p>
+        <div class="flex justify-between">
+          <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    <span itemprop="name">skyler</span>
+  
+  </span>
+</div>
+
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+  
+    
+  
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://x.com/intent/post?text=Go%e8%af%ad%e8%a8%80%e4%b8%ad%e7%9a%84%e5%9e%83%e5%9c%be%e5%9b%9e%e6%94%b6&amp;url=http://localhost:1313/zh/posts/go-gc/" target="_blank" rel="noopener noreferrer"
+      title="Share on X">
+      <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://facebook.com/sharer/sharer.php?u=http://localhost:1313/zh/posts/go-gc/" target="_blank" rel="noopener noreferrer"
+      title="Share on Facebook">
+      <ion-icon class="group-hover:text-primary-content" name="logo-facebook"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://wa.me/?text=Go%e8%af%ad%e8%a8%80%e4%b8%ad%e7%9a%84%e5%9e%83%e5%9c%be%e5%9b%9e%e6%94%b6%20http://localhost:1313/zh/posts/go-gc/" target="_blank" rel="noopener noreferrer"
+      title="Share on WhatsApp">
+      <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
+    </a>
+  
+
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      <section id="dream-single-post-content" itemprop="articleBody">
+        
+
+        <p>垃圾回收（英语：Garbage Collection，缩写为GC），在计算机科学中是一种自动的存储器管理机制。当一个计算机上的动态存储器不再需要时，就应该予以释放，以让出存储器，这种存储器资源管理，称为垃圾回收。垃圾回收器可以让程序员减轻许多负担，也减少程序员犯错的机会。</p>
+<h2 id="垃圾回收算法">垃圾回收算法</h2>
+<h3 id="引用计数法">引用计数法</h3>
+<p>每个单元维护一个域，保存其他单元对其的引用。当引用为0时就可以回收了。PHP就是使用的这种机制。</p>
+<p>引用计数是渐进式的，内存管理与用户程序交织在一起，不会出现STW，但是这种方式解决不了互相引用的问题。比如</p>
+<pre tabindex="0"><code>a.b = b;
+b.a = a;
+</code></pre><p>a和b二者互相引用，并且没有其他的引用了，引用计数法并不会把他们当做垃圾回收。</p>
+<h3 id="标记清扫法">标记清扫法</h3>
+<p>是一种自动内存管理基于追踪的垃圾回收算法。垃圾回收的时候首先会STW。然后从根节点开始追踪每一个可达的对象，标记完之后就去回收没有被标记的几点然后进行回收。</p>
+<p>那么标记清扫法能不能解决循环引用的问题呢？是可以的
+<img src="https://img.sysummery.top/biaojishanchu.jpg" alt=""></p>
+<p>虽然object4与object5互相引用，但是从根节点起是没有到达他们的路径的，因此他们两个不会被标记可达，在清扫阶段会被回收。</p>
+<p>标记清扫法最大的缺点就是GC的时候会STW。</p>
+<h3 id="分代收集">分代收集</h3>
+<p>分代垃圾回收算法将对象按生命周期长短存放到堆上的两个（或者更多）区域，这些区域就是分代（generation）。对于新生代的区域的垃圾回收频率要明显高于老年代区域。</p>
+<p>分配对象的时候从新生代里面分配，如果后面发现对象的生命周期较长，则将其移到老年代，这个过程叫做 promote。随着不断 promote，最后新生代的大小在整个堆的占用比例不会特别大。收集的时候集中主要精力在新生代就会相对来说效率更高，STW 时间也会更短。</p>
+<p>java的GC就是分代收集。</p>
+<h3 id="三色标记法">三色标记法</h3>
+<p><img src="https://img.sysummery.top/sansebiaojifa.gif" alt=""></p>
+<p>三色标记算法是对标记阶段的改进，原理如下：</p>
+<ol>
+<li>起初所有对象都是白色。</li>
+<li>从根出发扫描所有可达对象，标记为灰色，放入待处理队列。</li>
+<li>从队列取出灰色对象，将其引用对象标记为灰色放入队列，自身标记为黑色。</li>
+<li>重复 3，直到灰色对象队列为空。此时白色对象即为垃圾，进行回收。</li>
+</ol>
+<p>步骤1、2、3的时候需要STW, 不然会出现问题。假如不STW，如下图，灰色的B节点引用了白色的C节点。当C节点还没有变灰的时候，B和C之间的引用断了并且已经变黑的A节点又引用了C。因此C不会变成灰色的，还是白色。等到回收的时候会把C回收了，但是C明明被黑色的A引用着，就出问题。因此三色球算法在标记的过程中必须要STW。
+<img src="https://img.sysummery.top/3sbjfqx.jpg" alt=""></p>
+<h2 id="go语言的垃圾回收算法">go语言的垃圾回收算法</h2>
+<p>go原因的垃圾回收算法是基于三色标记法的，并在此基础上加入了写屏障缩短了整个过程的STW时间。</p>
+<p><img src="https://img.sysummery.top/gc.png" alt=""></p>
+<p>具体的过程是</p>
+<ol>
+<li>首先从 root 开始遍历，root 包括全局指针和 goroutine 栈上的指针。</li>
+<li>从 root 开始遍历，标记为灰色。遍历灰色队列。</li>
+<li>re-scan 全局指针和栈。因为 mark 和用户程序是并行的，所以在过程 1 的时候可能会有新的对象分配，这个时候就需要通过写屏障（write barrier）记录下来。re-scan 再完成检查一下。</li>
+</ol>
+<p>SWT的阶段</p>
+<ol>
+<li>第一个是 GC 将要开始的时候，这个时候主要是一些准备工作，比如 enable write barrier。</li>
+<li>第二个过程就是上面提到的 re-scan 过程。如果这个时候没有 stw，那么 mark 将无休止。</li>
+</ol>
+<p>什么时候触发gc</p>
+<ol>
+<li>阈值：默认内存扩大一倍，启动gc</li>
+<li>定期：默认2min触发一次</li>
+<li>手动：runtime.gc()</li>
+</ol>
+      </section>
+
+      
+      <div class="divider"></div>
+      <div class="flex flex-col md:flex-row justify-between gap-4 py-4">
+        
+        <a class="group btn btn-outline" href="/zh/posts/go-lock/" title="Go语言中的锁">
+          <ion-icon name="chevron-back"></ion-icon>
+          <div class="inline-flex flex-col items-start">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">上一页</span>
+            <span class="max-w-48 truncate">Go语言中的锁</span>
+          </div>
+        </a>
+        
+
+        
+        <a class="group btn btn-outline" href="/zh/posts/go-array-str-slice/" title="Go语言中的数组、字符串、切片">
+          <div class="inline-flex flex-col items-end">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">下一页</span>
+            <span class="max-w-48 truncate">Go语言中的数组、字符串、切片</span>
+          </div>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </a>
+        
+      </div>
+      
+      
+    <script src="https://giscus.app/client.js"
+        data-repo="skyler0513/skylersu.com"
+        data-repo-id="R_kgDON_xUqw"
+        data-category="Announcements"
+        data-category-id="DIC_kwDON_xUq84CnWa0"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+      
+    </article>
+  </div>
+
+  <div class="hidden lg:flex lg:flex-col lg:items-end">
+    
+
+    
+  </div>
+</div>
+
+            
+
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="dream-grid dream-grid-about">
+  
+  
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">关于</div>
+
+        <div class="prose dark:prose-invert">
+          <p>我叫Skyler是一个喜欢足球的飞行员！</p>
+<p>骗你的啦，⚽️和✈️只是我的理想啦，我目前是个喜欢🍺的程序员！我目前在帝都，但是很喜欢青岛和深圳，很感谢你能看完About Me !</p>
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+            
+
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme = "forest"
+</script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+
+  
+  
+  <script src="/js/grid.js"></script>
+
+
+
+
+<script src="/js/main.js"></script>
+
+    
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/luxon@1.26.0"
+  integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0="
+  crossorigin="anonymous"
+></script>
+<script>
+  format()
+
+  function format() {
+    document.querySelectorAll('span[data-format="luxon"]').forEach(el => {
+      const date = el.textContent
+
+      el.textContent = luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日")
+    })
+  }
+</script>
+
+
+
+
+
+
+  
+    <script type="module">
+      import mediumZoom from 'https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/+esm';
+      mediumZoom('#dream-single-post-content img')
+    </script>
+  
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>

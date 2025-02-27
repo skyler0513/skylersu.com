@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innodb查看B&#43;tree的高度 | 🌱 夏天的海风</title>
+
+    
+<link href="http://img.sysummery.top/logo.png" rel="icon" type="image/x-icon" />
+
+
+<link rel="canonical" href="http://localhost:1313/zh/posts/btree-height/" />
+
+
+
+<meta name="author" content="skyler" />
+<meta name="description" content="在innodb中无论是主键索引还是非主键索引数据结构都是B&#43;tree。而B&#43;tree数的高度直接决定了在不考虑缓存的情况下读取一个数据页硬盘所需的IO次数，因此B&#43;tree的高度相当重要。生产环境下高度一般为2~3.
+" />
+
+
+<meta name="keywords" content="Mysql,Innodb">
+
+
+
+<meta name="generator" content="Hugo 0.144.2">
+
+
+<meta property="og:url" content="http://localhost:1313/zh/posts/btree-height/">
+  <meta property="og:site_name" content="🌱 夏天的海风">
+  <meta property="og:title" content="Innodb查看B&#43;tree的高度">
+  <meta property="og:description" content="在innodb中无论是主键索引还是非主键索引数据结构都是B&#43;tree。而B&#43;tree数的高度直接决定了在不考虑缓存的情况下读取一个数据页硬盘所需的IO次数，因此B&#43;tree的高度相当重要。生产环境下高度一般为2~3.">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2019-11-21T10:46:47+00:00">
+    <meta property="article:modified_time" content="2019-11-21T10:46:47+00:00">
+    <meta property="article:tag" content="Mysql">
+    <meta property="article:tag" content="Innodb">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Innodb查看B&#43;tree的高度">
+  <meta name="twitter:description" content="在innodb中无论是主键索引还是非主键索引数据结构都是B&#43;tree。而B&#43;tree数的高度直接决定了在不考虑缓存的情况下读取一个数据页硬盘所需的IO次数，因此B&#43;tree的高度相当重要。生产环境下高度一般为2~3.">
+
+
+
+
+<link rel="stylesheet" href="/css/output.css" />
+
+
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between px-4">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="http://img.sysummery.top/logo.png" alt="🌱 夏天的海风" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="http://localhost:1313/" class="text-lg font-semibold cursor-pointer">
+          🌱 夏天的海风
+        </a>
+        
+        
+        <div class="text-base-content/60 text-sm">怀念那些个过去的夏天</div>
+        
+      </div>
+      
+    </section>
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-[1] shadow-md">
+        
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/zh/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/zh/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+      
+      
+      <div role="link" tabindex="0"
+        class="text-sm font-semibold cursor-pointer hover:underline"
+        @click="flip = !flip"
+        title="关于"
+      >关于</div>
+      
+      
+
+      
+      
+
+      
+
+      
+      
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/zh/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/zh/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+<div class="lg:grid lg:grid-cols-4 gap-4 mt-4 px-4">
+  <div class="hidden lg:block"></div>
+
+  <div class="lg:col-span-2">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
+      
+  <meta itemprop="name" content="Innodb查看B&#43;tree的高度">
+  <meta itemprop="description" content="在innodb中无论是主键索引还是非主键索引数据结构都是B&#43;tree。而B&#43;tree数的高度直接决定了在不考虑缓存的情况下读取一个数据页硬盘所需的IO次数，因此B&#43;tree的高度相当重要。生产环境下高度一般为2~3.">
+  <meta itemprop="datePublished" content="2019-11-21T10:46:47+00:00">
+  <meta itemprop="dateModified" content="2019-11-21T10:46:47+00:00">
+  <meta itemprop="wordCount" content="81">
+  <meta itemprop="keywords" content="Mysql,Innodb">
+
+      <header>
+        <h1 itemprop="headline">Innodb查看B&#43;tree的高度</h1>
+        <p class="text-sm">
+          
+            <span data-format="luxon">2019-11-21T10:46:47Z</span>
+          
+
+          | <span>1分钟阅读</span>
+
+          
+          | <span>更新于
+            
+              <span data-format="luxon">2019-11-21T10:46:47Z</span>
+            </span>
+          
+        </p>
+        <div class="flex justify-between">
+          <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    <span itemprop="name">skyler</span>
+  
+  </span>
+</div>
+
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+  
+    
+  
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://x.com/intent/post?text=Innodb%e6%9f%a5%e7%9c%8bB&#43;tree%e7%9a%84%e9%ab%98%e5%ba%a6&amp;url=http://localhost:1313/zh/posts/btree-height/" target="_blank" rel="noopener noreferrer"
+      title="Share on X">
+      <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://facebook.com/sharer/sharer.php?u=http://localhost:1313/zh/posts/btree-height/" target="_blank" rel="noopener noreferrer"
+      title="Share on Facebook">
+      <ion-icon class="group-hover:text-primary-content" name="logo-facebook"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://wa.me/?text=Innodb%e6%9f%a5%e7%9c%8bB&#43;tree%e7%9a%84%e9%ab%98%e5%ba%a6%20http://localhost:1313/zh/posts/btree-height/" target="_blank" rel="noopener noreferrer"
+      title="Share on WhatsApp">
+      <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
+    </a>
+  
+
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      <section id="dream-single-post-content" itemprop="articleBody">
+        
+
+        <p>在innodb中无论是主键索引还是非主键索引数据结构都是B+tree。而B+tree数的高度直接决定了在不考虑缓存的情况下读取一个数据页硬盘所需的IO次数，因此B+tree的高度相当重要。生产环境下高度一般为2~3.</p>
+<h2 id="一颗btree能存放多少数据">一颗B+tree能存放多少数据？</h2>
+<p>先回顾几个名词</p>
+<ul>
+<li>磁盘的最小存储单元是扇区，大小为512字节</li>
+<li>文件系统的最小存储单元是4kb</li>
+<li>innodb中数据的最小存储单元是页，大小为16kb（16384字节，不过也可以设置的更小）可以通过以下命令获取</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">show</span> variables <span style="color:#66d9ef">like</span> <span style="color:#e6db74">&#39;innodb_page_size&#39;</span>
+</span></span></code></pre></div><ul>
+<li>innodb中聚簇索引（主键）的叶子节点存放的是数据，非叶子节点存放的是关键字和指向下一层的指针，如下图所示，不过实际上叶子结点之间是一个双向链表而不是单向链表
+<img src="https://img.sysummery.top/%E6%88%AA%E5%B1%8F2019-11-21%E4%B8%8B%E5%8D%882.41.29.jpg" alt=""></li>
+</ul>
+<p>我们假设主键是8字节的bigint型的，B+tree中的指针是6字节，那么一对数据+指针就是14字节，一个数据页的大小时16kb,但是一个数据页中不可能全部存放数据，还会有一些元信息，关于页结构可以参考这篇<a href="https://www.cnblogs.com/bdsir/p/8745553.html" target="_blank">文章</a>
+。我们假设一个数据页存放数据部分最大16282字节。那么一个数据页可以存放<code>16282/14=1163</code>对“键值与指针”。</p>
+<p>如果一个数据表的主键索引的高度是2，说明他的第一层是键值和指针，第二层就是数据页了。第一层有1163个指针，也就说明第二层有1163个数据页，总共能存放<code>1163*16282=18935966</code>比特的数据。如果一行数据的平均大小为1kb,那么高度为2的B+tree可以存放<code>18935966/1024=18492</code>条数据。下面的这个是sql是查看一张表的行数据的平均大小</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">*</span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span>
+</span></span><span style="display:flex;"><span>	information_schema.TABLES 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span>
+</span></span><span style="display:flex;"><span>	information_schema.TABLES.TABLE_SCHEMA <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;test&#39;</span> 
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">AND</span> information_schema.TABLES.<span style="color:#66d9ef">TABLE_NAME</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;insert_asc&#39;</span>
+</span></span></code></pre></div><p>其中test是库名insert_asc是表名。返回结果中的&rsquo;AVG_ROW_LENGTH&rsquo;就是每行数据的平均长度。</p>
+<p>如果高度是3的B+tree，第一层有1163个关键字于指针对，第二层就有<code>1163*1163</code>个关键字与指针对，叶子层就可以存放<code>1163*1163*16282</code>比特的数据。还是假如平均一行的数据大小是1kb,那么高度是3的B+tree可以存放<code>1163*1163*16282/1024=21506375</code>条数据。</p>
+<p>以上的推论过程有如下的局限性</p>
+<ol>
+<li>一个数据页可以用来存放数据的空间是多少，我们假设是16282比特，但具体是多少我查了很多资料都没找到。</li>
+<li>当一个数据页中的数据行的某一字段太大的时候，会把一部分数据放到额外的页中，为的是保证一个数据页至少有两条数据。所以啊，实际存储数据的数据页可能大于主键B+tree的叶子节点的数目。</li>
+</ol>
+<p>尽管上面的论证有一些局限性，但是我们还是能够得到如下的结论</p>
+<ol>
+<li>如果单行数据不是太大的情况下，比如1kb,那么一课高度为3的主键索引可以存储2000多万行的数据，如果单行数据为0.5kb那么可以存储4000多万行的数据。</li>
+<li>如果数据行的字段很多，会导致行数据的平均大小变大，可能会使B+tree的高度变大</li>
+<li>一般来说B+tree的高度为2~3的时候性能是不错的，换言之如果单行记录不大的情况下，innodb的一张表能轻松地hold住2000万级别的数据</li>
+</ol>
+<h2 id="直接查看btree的高度">直接查看B+tree的高度</h2>
+<p>在innodb的表空间文件中,约定在根页偏移量64的地方存放了B+tree的高度。高度是从0开始算的。使用sql</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span>
+</span></span><span style="display:flex;"><span>	b.NAME,
+</span></span><span style="display:flex;"><span>	a.NAME,
+</span></span><span style="display:flex;"><span>	index_id,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">type</span>,
+</span></span><span style="display:flex;"><span>	a.<span style="color:#66d9ef">space</span>,
+</span></span><span style="display:flex;"><span>	a.PAGE_NO 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span>
+</span></span><span style="display:flex;"><span>	information_schema.INNODB_SYS_INDEXES a,
+</span></span><span style="display:flex;"><span>	information_schema.INNODB_SYS_TABLES b 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span>
+</span></span><span style="display:flex;"><span>	a.table_id <span style="color:#f92672">=</span> b.table_id 
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">AND</span> a.<span style="color:#66d9ef">space</span> <span style="color:#f92672">&lt;&gt;</span> <span style="color:#ae81ff">0</span> 
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">AND</span> b.NAME <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;test/insert_desc&#39;</span>;
+</span></span></code></pre></div><p>可看到test数据库insert_desc表的所有索引信息
+<img src="https://img.sysummery.top/%E6%88%AA%E5%B1%8F2019-11-21%E4%B8%8B%E5%8D%884.44.31.jpg" alt=""></p>
+<p>可以看到第一行是主键索引，他的根页在表空间的第三页。resblock_id是一个普通的索引，他的根页在表空间的第四页。使用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>hexdump -s <span style="color:#ae81ff">49216</span> -n <span style="color:#ae81ff">10</span> insert_asc.ibd
+</span></span></code></pre></div><p>可以看到表insert_asc.ibd主键索引的高度。
+<img src="https://img.sysummery.top/%E6%88%AA%E5%B1%8F2019-11-21%E4%B8%8B%E5%8D%885.00.59.jpg" alt="">
+可以看到前两个字节是2，因此高度是3因为高度是从0开始算的。</p>
+<p><code>-s 49216</code>表示从表空间文件的49216字节的偏移量开始读取，为什么是49216？因为主键索引的是在第三页,<code>49216=16kb*3+64</code>,其中16kb是数据页的大小。同理resblock_id的索引高度读取方法是</p>
+<pre tabindex="0"><code>hexdump -s 65600 -n 10 insert_asc.ibd
+</code></pre><p>得到的结果是
+<img src="https://img.sysummery.top/%E6%88%AA%E5%B1%8F2019-11-21%E4%B8%8B%E5%8D%885.04.23.jpg" alt=""></p>
+<p>也就是改索引的高度是1.</p>
+      </section>
+
+      
+      <div class="divider"></div>
+      <div class="flex flex-col md:flex-row justify-between gap-4 py-4">
+        
+        <a class="group btn btn-outline" href="/zh/posts/git-advance/" title="Git进阶">
+          <ion-icon name="chevron-back"></ion-icon>
+          <div class="inline-flex flex-col items-start">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">上一页</span>
+            <span class="max-w-48 truncate">Git进阶</span>
+          </div>
+        </a>
+        
+
+        
+        <a class="group btn btn-outline" href="/zh/posts/the-log-files-in-mysql/" title="Mysql中的日志文件">
+          <div class="inline-flex flex-col items-end">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">下一页</span>
+            <span class="max-w-48 truncate">Mysql中的日志文件</span>
+          </div>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </a>
+        
+      </div>
+      
+      
+    <script src="https://giscus.app/client.js"
+        data-repo="skyler0513/skylersu.com"
+        data-repo-id="R_kgDON_xUqw"
+        data-category="Announcements"
+        data-category-id="DIC_kwDON_xUq84CnWa0"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+      
+    </article>
+  </div>
+
+  <div class="hidden lg:flex lg:flex-col lg:items-end">
+    
+
+    
+  </div>
+</div>
+
+            
+
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="dream-grid dream-grid-about">
+  
+  
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">关于</div>
+
+        <div class="prose dark:prose-invert">
+          <p>我叫Skyler是一个喜欢足球的飞行员！</p>
+<p>骗你的啦，⚽️和✈️只是我的理想啦，我目前是个喜欢🍺的程序员！我目前在帝都，但是很喜欢青岛和深圳，很感谢你能看完About Me !</p>
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+            
+
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme = "forest"
+</script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+
+  
+  
+  <script src="/js/grid.js"></script>
+
+
+
+
+<script src="/js/main.js"></script>
+
+    
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/luxon@1.26.0"
+  integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0="
+  crossorigin="anonymous"
+></script>
+<script>
+  format()
+
+  function format() {
+    document.querySelectorAll('span[data-format="luxon"]').forEach(el => {
+      const date = el.textContent
+
+      el.textContent = luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日")
+    })
+  }
+</script>
+
+
+
+
+
+
+  
+    <script type="module">
+      import mediumZoom from 'https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/+esm';
+      mediumZoom('#dream-single-post-content img')
+    </script>
+  
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>

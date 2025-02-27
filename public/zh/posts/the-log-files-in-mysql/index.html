@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mysql中的日志文件 | 🌱 夏天的海风</title>
+
+    
+<link href="http://img.sysummery.top/logo.png" rel="icon" type="image/x-icon" />
+
+
+<link rel="canonical" href="http://localhost:1313/zh/posts/the-log-files-in-mysql/" />
+
+
+
+<meta name="author" content="skyler" />
+<meta name="description" content="mysql中有很多重要的日志文件，这些日志文件主要可以分为两大类：服务器的日志文件以及存储引擎的日志文件。平时我们用的存储引擎都是innodb，因此今天介绍的存储引擎的日志文件也是innodb的日志文件。
+" />
+
+
+<meta name="keywords" content="Mysql,Innodb">
+
+
+
+<meta name="generator" content="Hugo 0.144.2">
+
+
+<meta property="og:url" content="http://localhost:1313/zh/posts/the-log-files-in-mysql/">
+  <meta property="og:site_name" content="🌱 夏天的海风">
+  <meta property="og:title" content="Mysql中的日志文件">
+  <meta property="og:description" content="mysql中有很多重要的日志文件，这些日志文件主要可以分为两大类：服务器的日志文件以及存储引擎的日志文件。平时我们用的存储引擎都是innodb，因此今天介绍的存储引擎的日志文件也是innodb的日志文件。">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2019-11-17T08:52:53+00:00">
+    <meta property="article:modified_time" content="2019-11-17T08:52:53+00:00">
+    <meta property="article:tag" content="Mysql">
+    <meta property="article:tag" content="Innodb">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Mysql中的日志文件">
+  <meta name="twitter:description" content="mysql中有很多重要的日志文件，这些日志文件主要可以分为两大类：服务器的日志文件以及存储引擎的日志文件。平时我们用的存储引擎都是innodb，因此今天介绍的存储引擎的日志文件也是innodb的日志文件。">
+
+
+
+
+<link rel="stylesheet" href="/css/output.css" />
+
+
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between px-4">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="http://img.sysummery.top/logo.png" alt="🌱 夏天的海风" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="http://localhost:1313/" class="text-lg font-semibold cursor-pointer">
+          🌱 夏天的海风
+        </a>
+        
+        
+        <div class="text-base-content/60 text-sm">怀念那些个过去的夏天</div>
+        
+      </div>
+      
+    </section>
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-[1] shadow-md">
+        
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/zh/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/zh/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+      
+      
+      <div role="link" tabindex="0"
+        class="text-sm font-semibold cursor-pointer hover:underline"
+        @click="flip = !flip"
+        title="关于"
+      >关于</div>
+      
+      
+
+      
+      
+
+      
+
+      
+      
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/zh/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/zh/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+<div class="lg:grid lg:grid-cols-4 gap-4 mt-4 px-4">
+  <div class="hidden lg:block"></div>
+
+  <div class="lg:col-span-2">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
+      
+  <meta itemprop="name" content="Mysql中的日志文件">
+  <meta itemprop="description" content="mysql中有很多重要的日志文件，这些日志文件主要可以分为两大类：服务器的日志文件以及存储引擎的日志文件。平时我们用的存储引擎都是innodb，因此今天介绍的存储引擎的日志文件也是innodb的日志文件。">
+  <meta itemprop="datePublished" content="2019-11-17T08:52:53+00:00">
+  <meta itemprop="dateModified" content="2019-11-17T08:52:53+00:00">
+  <meta itemprop="wordCount" content="129">
+  <meta itemprop="keywords" content="Mysql,Innodb">
+
+      <header>
+        <h1 itemprop="headline">Mysql中的日志文件</h1>
+        <p class="text-sm">
+          
+            <span data-format="luxon">2019-11-17T08:52:53Z</span>
+          
+
+          | <span>1分钟阅读</span>
+
+          
+          | <span>更新于
+            
+              <span data-format="luxon">2019-11-17T08:52:53Z</span>
+            </span>
+          
+        </p>
+        <div class="flex justify-between">
+          <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    <span itemprop="name">skyler</span>
+  
+  </span>
+</div>
+
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+  
+    
+  
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://x.com/intent/post?text=Mysql%e4%b8%ad%e7%9a%84%e6%97%a5%e5%bf%97%e6%96%87%e4%bb%b6&amp;url=http://localhost:1313/zh/posts/the-log-files-in-mysql/" target="_blank" rel="noopener noreferrer"
+      title="Share on X">
+      <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://facebook.com/sharer/sharer.php?u=http://localhost:1313/zh/posts/the-log-files-in-mysql/" target="_blank" rel="noopener noreferrer"
+      title="Share on Facebook">
+      <ion-icon class="group-hover:text-primary-content" name="logo-facebook"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://wa.me/?text=Mysql%e4%b8%ad%e7%9a%84%e6%97%a5%e5%bf%97%e6%96%87%e4%bb%b6%20http://localhost:1313/zh/posts/the-log-files-in-mysql/" target="_blank" rel="noopener noreferrer"
+      title="Share on WhatsApp">
+      <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
+    </a>
+  
+
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      <section id="dream-single-post-content" itemprop="articleBody">
+        
+
+        <p>mysql中有很多重要的日志文件，这些日志文件主要可以分为两大类：服务器的日志文件以及存储引擎的日志文件。平时我们用的存储引擎都是innodb，因此今天介绍的存储引擎的日志文件也是innodb的日志文件。</p>
+<h2 id="服务器日志文件">服务器日志文件</h2>
+<ul>
+<li>error log 错误日志</li>
+<li>slow query log 慢查询日志</li>
+<li>bin log 二进制日志</li>
+<li>relay log 中继日志</li>
+</ul>
+<h2 id="innodb存储引擎的日志">innodb存储引擎的日志</h2>
+<ul>
+<li>redo log 重做日志</li>
+<li>undo log 撤回日志</li>
+</ul>
+<h3 id="11-error-log">1.1 error log</h3>
+<p>error log存在于数据库的数据根目录下。用于记录mysql的启动、运行、关闭的过程中出现的错误和警告。在mysql启动异常的时候尤其有用。可以通过以下的命令来查看error log的具体的位置</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span> <span style="color:#66d9ef">show</span> variables <span style="color:#66d9ef">like</span> <span style="color:#e6db74">&#39;log_error&#39;</span><span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">G</span>
+</span></span></code></pre></div><h3 id="12-slow-query-log">1.2 slow query log</h3>
+<p>slow query log 记录了所有查询时间大于(不包括等于)查询阈值的sql语句。可以通过以下命令获取查询阈值</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">show</span> variables <span style="color:#66d9ef">like</span> <span style="color:#e6db74">&#39;long_query_time&#39;</span><span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">G</span>
+</span></span></code></pre></div><p>另一个和慢查询日志有关的参数是<code>log_queries_not_using_indexes</code>,表示如果查询没有用到索引也会被记录到慢查询日志当中去，无论有没有超过查询阈值。</p>
+<h3 id="13-bin-log">1.3 bin log</h3>
+<p>bin log记录的mysql所有数据库的所有数据表的更改的所有操作，无论使用的是什么存储引擎。他也是唯一一个使用二进制记录的日志。如果在更新一条记录的一个字段的时候是用原值更新的那么这条记录并没有改变但是还是会写入bin log。</p>
+<p>bin log主要用来复制，在主库上源源不断的产生bin log并同步给各个从库来保证主从之间的数据一致。</p>
+<p>bin log也可以以支持point-in-time的数据恢复。</p>
+<p>bin log 的格式主要有三种</p>
+<ol>
+<li>row 基于每一行</li>
+<li>statement 基于sql语句</li>
+<li>mixed 既有row形式的又有statement形式的</li>
+</ol>
+<h3 id="14-relay-log">1.4 relay log</h3>
+<p>在从库中会有一个专门的IO线程不断的从主库中读取bin log并把读取的内容写入relay log中。然后会有另外的线程会将新产生的relay log重放到从库中。主从复制的流程大致为</p>
+<p><img src="https://img.sysummery.top/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_cde5d8b5-3035-4efa-bb0b-367394045f75.png" alt=""></p>
+<h3 id="21-redo-log">2.1 redo log</h3>
+<p>存在于共享表空间中，是<strong>物理日志</strong>，记录的是一个事务中数据页的变化信息，不是某行的数据的变化信息。</p>
+<p>用于保证事务的持久性。在使用innodb存储引擎的时候，当一页数据被更新时首先在innodb的缓冲池中进行更新，然后才会根据一定的策略异步刷新回磁盘。那么问题来了，如果缓冲池中的数据页还未来的急刷新回磁盘服务器就宕机了怎么办？innodb是采用的日志先于数据刷新到磁盘的策略。</p>
+<p>每当一个事务写入数据的时候，innodb会向redo log缓存里写入<strong>数据页</strong>的物理变化信息，并以一定的策略更新到硬盘上。等到事务提交的时候强制redo log把数据页信息的更改更新到磁盘上。也就是说，当事务提交成功后相应的数据页可能还没更新到磁盘上，但是redo log一定更新到了磁盘上。如果此时宕机，那么innodb在重启时可以根据redo log来更新数据。</p>
+<p>如果缓冲池中的脏页都已经刷新到磁盘了，那么redo log就相当于完成了他的使命。</p>
+<p>redo log每次更新到磁盘的数据大小都是512kb，正好是一个扇区的大小，因此这个过程是原子性的。</p>
+<p>redo log刷新回磁盘的策略</p>
+<ol>
+<li>主线程每秒刷新一次</li>
+<li>每次事务提交时</li>
+<li>当redo log的可用空间少于一半的时候</li>
+</ol>
+<p>因此，redo log写入磁盘不是在事务提交的那一刹那完成的，是在提交之前就已经开始“运动”了。所以即使一个大的事务提交，redo log的写入磁盘都会很快，不会成为事务提交慢的原因。</p>
+<h3 id="22-undo-log">2.2 undo log</h3>
+<p>存在于共享表空间里，5.7可以存放在单独的表空间里。是存放在一个叫做undo log segment里面。undo log不像redo log那样有缓冲池，是顺序的往物理页上面写的。</p>
+<p>undo log记录的是一个事务中数据的逻辑改变。如果你删除一条数据那么他就增加一条数据，如果你更改一条数据那么他就反向更改一条数据。</p>
+<p>undo log的作用主要有两点</p>
+<ol>
+<li>用于事务的回滚</li>
+<li>用于MVCC</li>
+</ol>
+<p>每当一个事务开启的时候，当要更新一条数据的时候会先写undo log，只有undo log成功的写入了，整个事务才会有“后路”，才能回滚。之后才是写数据写redo log。特别需要注意的是，undo log 也是 redo log的保护对象，每一条undo log的写入都会有redo log的写入。</p>
+<p>当一条数据被事务T1修改中，此时T2事务中想要读取此数据，那么T2读取的永远是T1还未修改的那个版本，这就能保证在T2中不会出现幻读的情况。</p>
+<p>当一条数据更新时先写undo log，再写数据，再写redo log。</p>
+<p>undo log是数据库并发(MVCC)的关关键。innodb为每一行的数据都分配了两个隐藏的列：<strong>事务id和回滚指针</strong>。事务id能代表当前哪个事务正在写这行数据。回滚指针指向undo log中的这条数据的“上一个版本”，一单回滚就使用undo log中的日志恢复数据。undo log与read view一起工作实现了innodb的MVCC。</p>
+      </section>
+
+      
+      <div class="divider"></div>
+      <div class="flex flex-col md:flex-row justify-between gap-4 py-4">
+        
+        <a class="group btn btn-outline" href="/zh/posts/btree-height/" title="Innodb查看B&#43;tree的高度">
+          <ion-icon name="chevron-back"></ion-icon>
+          <div class="inline-flex flex-col items-start">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">上一页</span>
+            <span class="max-w-48 truncate">Innodb查看B&#43;tree的高度</span>
+          </div>
+        </a>
+        
+
+        
+        <a class="group btn btn-outline" href="/zh/posts/https/" title="Https">
+          <div class="inline-flex flex-col items-end">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">下一页</span>
+            <span class="max-w-48 truncate">Https</span>
+          </div>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </a>
+        
+      </div>
+      
+      
+    <script src="https://giscus.app/client.js"
+        data-repo="skyler0513/skylersu.com"
+        data-repo-id="R_kgDON_xUqw"
+        data-category="Announcements"
+        data-category-id="DIC_kwDON_xUq84CnWa0"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+      
+    </article>
+  </div>
+
+  <div class="hidden lg:flex lg:flex-col lg:items-end">
+    
+
+    
+  </div>
+</div>
+
+            
+
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="dream-grid dream-grid-about">
+  
+  
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">关于</div>
+
+        <div class="prose dark:prose-invert">
+          <p>我叫Skyler是一个喜欢足球的飞行员！</p>
+<p>骗你的啦，⚽️和✈️只是我的理想啦，我目前是个喜欢🍺的程序员！我目前在帝都，但是很喜欢青岛和深圳，很感谢你能看完About Me !</p>
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+            
+
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme = "forest"
+</script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+
+  
+  
+  <script src="/js/grid.js"></script>
+
+
+
+
+<script src="/js/main.js"></script>
+
+    
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/luxon@1.26.0"
+  integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0="
+  crossorigin="anonymous"
+></script>
+<script>
+  format()
+
+  function format() {
+    document.querySelectorAll('span[data-format="luxon"]').forEach(el => {
+      const date = el.textContent
+
+      el.textContent = luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日")
+    })
+  }
+</script>
+
+
+
+
+
+
+  
+    <script type="module">
+      import mediumZoom from 'https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/+esm';
+      mediumZoom('#dream-single-post-content img')
+    </script>
+  
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>

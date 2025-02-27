@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nginx学习笔记 | 🌱 夏天的海风</title>
+
+    
+<link href="http://img.sysummery.top/logo.png" rel="icon" type="image/x-icon" />
+
+
+<link rel="canonical" href="http://localhost:1313/en/posts/nginx-notes/" />
+
+
+
+<meta name="author" content="skyler" />
+<meta name="description" content="Nginx 是一个免费、开源、高性能、轻量级的 HTTP 和反向代理服务器，也是一个电子邮件(IMAP/POP3)代理服务器，其特点是占有内存少，并发能力强。
+" />
+
+
+<meta name="keywords" content="Nginx">
+
+
+
+<meta name="generator" content="Hugo 0.144.2">
+
+
+<meta property="og:url" content="http://localhost:1313/en/posts/nginx-notes/">
+  <meta property="og:site_name" content="🌱 夏天的海风">
+  <meta property="og:title" content="Nginx学习笔记">
+  <meta property="og:description" content="Nginx 是一个免费、开源、高性能、轻量级的 HTTP 和反向代理服务器，也是一个电子邮件(IMAP/POP3)代理服务器，其特点是占有内存少，并发能力强。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2019-08-04T09:04:05+00:00">
+    <meta property="article:modified_time" content="2019-08-04T09:04:05+00:00">
+    <meta property="article:tag" content="Nginx">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Nginx学习笔记">
+  <meta name="twitter:description" content="Nginx 是一个免费、开源、高性能、轻量级的 HTTP 和反向代理服务器，也是一个电子邮件(IMAP/POP3)代理服务器，其特点是占有内存少，并发能力强。">
+
+
+
+
+<link rel="stylesheet" href="/css/output.css" />
+
+
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between px-4">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:online" @click="flip = !flip" title="Flip it!">
+        <div class="h-10 rounded-full">
+          <img src="http://img.sysummery.top/logo.png" alt="🌱 夏天的海风" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="http://localhost:1313/" class="text-lg font-semibold cursor-pointer">
+          🌱 夏天的海风
+        </a>
+        
+        
+        <div class="text-base-content/60 text-sm">怀念那些个过去的夏天</div>
+        
+      </div>
+      
+    </section>
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-[1] shadow-md">
+        
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="About">
+    <ion-icon name="information-circle"></ion-icon>About</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/en/posts" title="Archives">
+    <ion-icon name="archive"></ion-icon>
+    Archives
+  </a>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/en/tags" title="All Tags">
+    <ion-icon name="pricetags"></ion-icon>
+    All Tags
+  </a>
+</li>
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+      
+      
+      <div role="link" tabindex="0"
+        class="text-sm font-semibold cursor-pointer hover:underline"
+        @click="flip = !flip"
+        title="About"
+      >About</div>
+      
+      
+
+      
+      
+
+      
+
+      
+      
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/en/posts" title="Archives">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/en/tags" title="All Tags">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+<div class="lg:grid lg:grid-cols-4 gap-4 mt-4 px-4">
+  <div class="hidden lg:block"></div>
+
+  <div class="lg:col-span-2">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
+      
+  <meta itemprop="name" content="Nginx学习笔记">
+  <meta itemprop="description" content="Nginx 是一个免费、开源、高性能、轻量级的 HTTP 和反向代理服务器，也是一个电子邮件(IMAP/POP3)代理服务器，其特点是占有内存少，并发能力强。">
+  <meta itemprop="datePublished" content="2019-08-04T09:04:05+00:00">
+  <meta itemprop="dateModified" content="2019-08-04T09:04:05+00:00">
+  <meta itemprop="wordCount" content="250">
+  <meta itemprop="keywords" content="Nginx">
+
+      <header>
+        <h1 itemprop="headline">Nginx学习笔记</h1>
+        <p class="text-sm">
+          
+            <span data-format="luxon">2019-08-04T09:04:05Z</span>
+          
+
+          | <span>2 minute read</span>
+
+          
+          | <span>Updated at
+            
+              <span data-format="luxon">2019-08-04T09:04:05Z</span>
+            </span>
+          
+        </p>
+        <div class="flex justify-between">
+          <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    <span itemprop="name">skyler</span>
+  
+  </span>
+</div>
+
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+  
+    
+  
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://x.com/intent/post?text=Nginx%e5%ad%a6%e4%b9%a0%e7%ac%94%e8%ae%b0&amp;url=http://localhost:1313/en/posts/nginx-notes/" target="_blank" rel="noopener noreferrer"
+      title="Share on X">
+      <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://facebook.com/sharer/sharer.php?u=http://localhost:1313/en/posts/nginx-notes/" target="_blank" rel="noopener noreferrer"
+      title="Share on Facebook">
+      <ion-icon class="group-hover:text-primary-content" name="logo-facebook"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://wa.me/?text=Nginx%e5%ad%a6%e4%b9%a0%e7%ac%94%e8%ae%b0%20http://localhost:1313/en/posts/nginx-notes/" target="_blank" rel="noopener noreferrer"
+      title="Share on WhatsApp">
+      <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
+    </a>
+  
+
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      <section id="dream-single-post-content" itemprop="articleBody">
+        
+
+        <p>Nginx 是一个免费、开源、高性能、轻量级的 HTTP 和反向代理服务器，也是一个电子邮件(IMAP/POP3)代理服务器，其特点是占有内存少，并发能力强。</p>
+<h2 id="nginx的架构">nginx的架构</h2>
+<p>Nginx 里有一个 master 进程和多个 worker 进程。master 进程并不处理网络请求，主要负责调度工作进程：加载配置、启动工作进程及非停升级。worker 进程负责处理网络请求与响应。</p>
+<p><img src="https://img.sysummery.top/nginx_process.png" alt=""></p>
+<p>master进程主要用来管理worker进程，具体包括如下4个主要功能：</p>
+<p>接收来自外界的信号。</p>
+<p>向各worker进程发送信号。</p>
+<p>监控woker进程的运行状态。</p>
+<p>当woker进程退出后（异常情况下），会自动重新启动新的woker进程。</p>
+<p>woker进程主要用来处理基本的网络事件：</p>
+<p>多个worker进程之间是对等且相互独立的，他们同等竞争来自客户端的请求。</p>
+<p>一个请求，只可能在一个worker进程中处理，一个worker进程，不可能处理其它进程的请求。</p>
+<p>worker进程的个数是可以设置的，一般我们会设置与机器cpu核数一致。同时，nginx为了更好的利用多核特性，具有cpu绑定选项，我们可以将某一个进程绑定在某一个核上，这样就不会因为进程的切换带来cache的失效。</p>
+<h2 id="建立连接的步骤">建立连接的步骤</h2>
+<ol>
+<li>最开始master进程会建立、绑定、监听一个socket。</li>
+<li>然后fork出多个work进程，work进程共享master监听的文件描述符</li>
+<li>当socket上有数据的时候，work进程会通过锁来竞争资源</li>
+<li>竞争到资源的work进程调用accept方法接收连接，accept方法会返回一个新的socket，之后就是这个新的socket与客户端建立3次握手和数据的交换。需要注意的是新建立的这个socket所监听的端口号还是80或443。唯一确定一个socket（只考虑tcp协议的）是四元组：客户端ip, 客户端端口, 服务器ip, 服务器端口。只要有一个元素不一样，就表示不同的连接。因此一单建立了连接，下次再通信的时候数据就会直接到第一次accept的那个socket，并不会再到达master进程最开始监听的那个socket了。</li>
+</ol>
+<h2 id="处理事件">处理事件</h2>
+<p>每个work进程可以处理两类事件</p>
+<ol>
+<li>处理已监听的socket的读或写就绪事件</li>
+<li>处理新的连接</li>
+</ol>
+<p>多个进程间通过争夺一块锁来决定谁处理新的连接。同一时刻只能有一个进程获取到锁。也因此不会产生“惊群”现象。</p>
+<p>获取到锁的进程调用epoll_wait方法返回的事件列表中既有已监听的socket的读或写就绪事件，也有要处理新的连接事件。新的连接事件的优先级比较高。</p>
+<p>没有获取到锁的进程调用epoll_wait方法只会获取到该进程监听的socket上的读或写就绪事件。</p>
+<p>每个work进程在启动后都会调用内核的epoll_create方法。该方法返回一个文件描述符，并在内核维护一个epoll模块。之后work进程通过这个文件描述符来实现对自己感兴趣的事件的添加、删除、修改、监听。</p>
+<p>当work进程获得一个新的连接的时候，会把这个socket上的读就绪事件通过epoll_ctl函数挂载在epoll模块的红黑树上。</p>
+<p>work进程通过epoll_wait函数获取到了socket上有可读事件后就开始处理该事件，处理的过程很短，就是把该请求根据用户的配置交到下游处理模块中。</p>
+<h2 id="模块">模块</h2>
+<p>Nginx 由内核和一系列模块组成，内核提供 Web 服务的基本功能，如启用网络协议，创建运行环境，接收和分配客户端请求，处理模块之间的交互。</p>
+<p>Nginx 的各种功能和操作都由模块来实现。Nginx 的模块从结构上分为：</p>
+<ul>
+<li>核心模块：HTTP 模块、EVENT 模块和 MAIL 模块。</li>
+<li>基础模块：HTTP Access 模块、HTTP FastCGI 模块、HTTP Proxy 模块和 HTTP Rewrite 模块。</li>
+<li>第三方模块：HTTP Upstream Request Hash 模块、Notice 模块和 HTTP Access Key 模块及用户自己开发的模块。</li>
+</ul>
+<h2 id="配置">配置</h2>
+<p>nginx的配置有三大模块</p>
+<ol>
+<li>全局块</li>
+<li>event块</li>
+<li>http块</li>
+</ol>
+<h3 id="全局块">全局块</h3>
+<p>全局块负责一些全局的配置，部分配置如下</p>
+<ol>
+<li>user 规定运行nginx的用户和用户组</li>
+<li>worker_processes worker进程的数量</li>
+<li>worker_rlimit_nofile 一个worker进程最大的打开文件的数量</li>
+</ol>
+<h3 id="event块">event块</h3>
+<p>event块里的配置是有关事件的，部分配置如下</p>
+<ol>
+<li>worker_connections 一个work进程能够处理的最大的连接数</li>
+<li>accept_mutex 当一个新连接到达时，如果激活了accept_mutex，那么多个Worker将以串行方式来处理，其中有一个Worker会被唤醒，其他的Worker继续保持休眠状态；如果没有激活accept_mutex，那么所有的Worker都会被唤醒，不过只有一个Worker能获取新连接，其它的Worker会重新进入休眠状态</li>
+<li>use epoll 使用epoll来管理io事件</li>
+</ol>
+<h3 id="http块">http块</h3>
+<p>http块中的配置包含两部分，公共部分和server部分。公共部分是所有server都采用的，server部分是每个server单独采用的。</p>
+<h4 id="公共配置">公共配置</h4>
+<ol>
+<li>client_header_buffer_size 请求头缓冲区大小</li>
+<li>large_client_header_buffers 当请求头太大的时候client_header_buffer_size放不下了，会向large_client_header_buffers申请一块额外的内存</li>
+<li>client_max_body_size 请求body的最大</li>
+<li>client_body_timeout 读取请求body的超时时间</li>
+<li>client_header_timeout 读取请求header的超时时间</li>
+<li>log_format access_log的日志格式</li>
+<li>sendfile 支持“零拷贝”</li>
+<li>keepalive_timeout 长连接的超时时间。超时后会nginx会释放socket资源。如果客户端再想通信需重新3次握手</li>
+</ol>
+<h4 id="server配置">server配置</h4>
+<p>server配置中一般会有多个location，把不同的url分配给不同的下游服务</p>
+<p>nginx中以$开头的都是nginx的变量。nginx在把请求发给fastcgi之前会把nginx的变量转化成fastcgi变量。fastcgi的变量由大写字母和下划线组成。在php的进程中，fastcgi的变量都在SERVERA全局数组中。</p>
+<h5 id="rewrite">rewrite</h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>!-e $request_filename<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    rewrite ^<span style="color:#f92672">(</span>.*<span style="color:#f92672">)</span>$ /index.php?_url<span style="color:#f92672">=</span>$1 last;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>$request_filename是根路径拼接的uri(域名后面的一段)。如果用户请求的不是一个文件那么久将进行重写。重写的规则是请求根域名下的index.php,而uri变成了_url参数</p>
+<p>rewrite最后会有一个标识符</p>
+<ul>
+<li>break url重写后，直接使用当前资源，不再执行location里余下的语句，完成本次请求，地址栏url不变</li>
+<li>last url重写后，马上发起一个新的请求，再次进入server块，重试location匹配，超过10次匹配不到报500错误，地址栏url不变</li>
+<li>redirect 返回302临时重定向，地址栏显示重定向后的url，爬虫不会更新url（因为是临时）</li>
+<li>permanent 返回301永久重定向, 地址栏显示重定向后的url，爬虫更新url</li>
+</ul>
+<h5 id="location">location</h5>
+<p>在匹配location的时候</p>
+<ul>
+<li>=  精确匹配</li>
+<li>~  表示大小写敏感的正则匹配</li>
+<li>~* 表示大小写不敏感的正则匹配</li>
+</ul>
+<p>以php为例。以.php为结尾的请求都转给fastcgi</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>location ~ <span style="color:#ae81ff">\.</span>php$ <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    set $real_script_name $fastcgi_script_name;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>$fastcgi_script_name ~ /lianjia<span style="color:#f92672">(</span>/.*<span style="color:#f92672">)</span>$<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        set $real_script_name $1;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    fastcgi_pass    127.0.0.1:18181;
+</span></span><span style="display:flex;"><span>    fastcgi_index  index.php;
+</span></span><span style="display:flex;"><span>    fastcgi_param  SCRIPT_FILENAME $document_root$real_script_name;
+</span></span><span style="display:flex;"><span>    include        tengine.fastcgi_params;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h2 id="负载均衡">负载均衡</h2>
+<p>nginx的负载均衡策略有三种</p>
+<ol>
+<li>平均分配</li>
+<li>根据权重</li>
+<li>根据客户端的ip</li>
+</ol>
+<p>无论哪一种，如果其中的一台机器出问题了，nginx会自动剔除，用起来很方便</p>
+<h3 id="平均负载">平均负载</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>http<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 待选服务器列表</span>
+</span></span><span style="display:flex;"><span>    upstream myproject<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        server 125.219.42.4;
+</span></span><span style="display:flex;"><span>        server 172.31.2.183;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    server<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        listen 80; 
+</span></span><span style="display:flex;"><span>        location / <span style="color:#f92672">{</span>            
+</span></span><span style="display:flex;"><span>            proxy_pass https://myproject;
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h3 id="根据权重负载">根据权重负载</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>http<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 待选服务器列表</span>
+</span></span><span style="display:flex;"><span>    upstream myproject<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        server 125.219.42.4 weight 1;
+</span></span><span style="display:flex;"><span>        server 172.31.2.183 weight 2;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    server<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        listen 80; 
+</span></span><span style="display:flex;"><span>        location / <span style="color:#f92672">{</span>            
+</span></span><span style="display:flex;"><span>            proxy_pass https://myproject;
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h3 id="根据用户ip负载">根据用户ip负载</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>http<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 待选服务器列表</span>
+</span></span><span style="display:flex;"><span>    upstream myproject<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        ip_hash;
+</span></span><span style="display:flex;"><span>        server 125.219.42.4;
+</span></span><span style="display:flex;"><span>        server 172.31.2.183;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    server<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        listen 80; 
+</span></span><span style="display:flex;"><span>        location / <span style="color:#f92672">{</span>            
+</span></span><span style="display:flex;"><span>            proxy_pass https://myproject;
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div>
+      </section>
+
+      
+      <div class="divider"></div>
+      <div class="flex flex-col md:flex-row justify-between gap-4 py-4">
+        
+        <a class="group btn btn-outline" href="/en/posts/cookie-oauth2-jwt/" title="从Cookie到OAuth2再到JWT">
+          <ion-icon name="chevron-back"></ion-icon>
+          <div class="inline-flex flex-col items-start">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">Previous page</span>
+            <span class="max-w-48 truncate">从Cookie到OAuth2再到JWT</span>
+          </div>
+        </a>
+        
+
+        
+        <div></div>
+        
+      </div>
+      
+      
+    <script src="https://giscus.app/client.js"
+        data-repo="skyler0513/skylersu.com"
+        data-repo-id="R_kgDON_xUqw"
+        data-category="Announcements"
+        data-category-id="DIC_kwDON_xUq84CnWa0"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+      
+    </article>
+  </div>
+
+  <div class="hidden lg:flex lg:flex-col lg:items-end">
+    
+
+    
+  </div>
+</div>
+
+            
+
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="dream-grid dream-grid-about">
+  
+  
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">关于</div>
+
+        <div class="prose dark:prose-invert">
+          <p>我叫Skyler是一个喜欢足球的飞行员！</p>
+<p>骗你的啦，⚽️和✈️只是我的理想啦，我目前是个喜欢🍺的程序员！我目前在帝都，但是很喜欢青岛和深圳，很感谢你能看完About Me !</p>
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+            
+
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme = "forest"
+</script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+
+  
+  
+  <script src="/js/grid.js"></script>
+
+
+
+
+<script src="/js/main.js"></script>
+
+    
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/luxon@1.26.0"
+  integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0="
+  crossorigin="anonymous"
+></script>
+<script>
+  format()
+
+  function format() {
+    document.querySelectorAll('span[data-format="luxon"]').forEach(el => {
+      const date = el.textContent
+
+      el.textContent = luxon.DateTime.fromISO(date, { locale: "en" }).toFormat("yyyy年MM月dd日")
+    })
+  }
+</script>
+
+
+
+
+
+
+  
+    <script type="module">
+      import mediumZoom from 'https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/+esm';
+      mediumZoom('#dream-single-post-content img')
+    </script>
+  
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>

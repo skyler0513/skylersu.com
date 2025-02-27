@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innodb存储引擎 | 🌱 夏天的海风</title>
+
+    
+<link href="http://img.sysummery.top/logo.png" rel="icon" type="image/x-icon" />
+
+
+<link rel="canonical" href="http://localhost:1313/zh/posts/innodb/" />
+
+
+
+<meta name="author" content="skyler" />
+<meta name="description" content="innodb存储引擎是现在mysql的默认存储引擎，其特点是行锁设计、支持MVCC、支持外键、提供一致性非锁定读、同时被用来最有效的利用以及使用内存和CPU。
+" />
+
+
+<meta name="keywords" content="Mysql,Innodb">
+
+
+
+<meta name="generator" content="Hugo 0.144.2">
+
+
+<meta property="og:url" content="http://localhost:1313/zh/posts/innodb/">
+  <meta property="og:site_name" content="🌱 夏天的海风">
+  <meta property="og:title" content="Innodb存储引擎">
+  <meta property="og:description" content="innodb存储引擎是现在mysql的默认存储引擎，其特点是行锁设计、支持MVCC、支持外键、提供一致性非锁定读、同时被用来最有效的利用以及使用内存和CPU。">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2019-12-03T12:20:14+00:00">
+    <meta property="article:modified_time" content="2019-12-03T12:20:14+00:00">
+    <meta property="article:tag" content="Mysql">
+    <meta property="article:tag" content="Innodb">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Innodb存储引擎">
+  <meta name="twitter:description" content="innodb存储引擎是现在mysql的默认存储引擎，其特点是行锁设计、支持MVCC、支持外键、提供一致性非锁定读、同时被用来最有效的利用以及使用内存和CPU。">
+
+
+
+
+<link rel="stylesheet" href="/css/output.css" />
+
+
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between px-4">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="http://img.sysummery.top/logo.png" alt="🌱 夏天的海风" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="http://localhost:1313/" class="text-lg font-semibold cursor-pointer">
+          🌱 夏天的海风
+        </a>
+        
+        
+        <div class="text-base-content/60 text-sm">怀念那些个过去的夏天</div>
+        
+      </div>
+      
+    </section>
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-[1] shadow-md">
+        
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/zh/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/zh/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+      
+      
+      <div role="link" tabindex="0"
+        class="text-sm font-semibold cursor-pointer hover:underline"
+        @click="flip = !flip"
+        title="关于"
+      >关于</div>
+      
+      
+
+      
+      
+
+      
+
+      
+      
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/zh/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/zh/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+<div class="lg:grid lg:grid-cols-4 gap-4 mt-4 px-4">
+  <div class="hidden lg:block"></div>
+
+  <div class="lg:col-span-2">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
+      
+  <meta itemprop="name" content="Innodb存储引擎">
+  <meta itemprop="description" content="innodb存储引擎是现在mysql的默认存储引擎，其特点是行锁设计、支持MVCC、支持外键、提供一致性非锁定读、同时被用来最有效的利用以及使用内存和CPU。">
+  <meta itemprop="datePublished" content="2019-12-03T12:20:14+00:00">
+  <meta itemprop="dateModified" content="2019-12-03T12:20:14+00:00">
+  <meta itemprop="wordCount" content="82">
+  <meta itemprop="keywords" content="Mysql,Innodb">
+
+      <header>
+        <h1 itemprop="headline">Innodb存储引擎</h1>
+        <p class="text-sm">
+          
+            <span data-format="luxon">2019-12-03T12:20:14Z</span>
+          
+
+          | <span>1分钟阅读</span>
+
+          
+          | <span>更新于
+            
+              <span data-format="luxon">2019-12-03T12:20:14Z</span>
+            </span>
+          
+        </p>
+        <div class="flex justify-between">
+          <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    <span itemprop="name">skyler</span>
+  
+  </span>
+</div>
+
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+  
+    
+  
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://x.com/intent/post?text=Innodb%e5%ad%98%e5%82%a8%e5%bc%95%e6%93%8e&amp;url=http://localhost:1313/zh/posts/innodb/" target="_blank" rel="noopener noreferrer"
+      title="Share on X">
+      <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://facebook.com/sharer/sharer.php?u=http://localhost:1313/zh/posts/innodb/" target="_blank" rel="noopener noreferrer"
+      title="Share on Facebook">
+      <ion-icon class="group-hover:text-primary-content" name="logo-facebook"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://wa.me/?text=Innodb%e5%ad%98%e5%82%a8%e5%bc%95%e6%93%8e%20http://localhost:1313/zh/posts/innodb/" target="_blank" rel="noopener noreferrer"
+      title="Share on WhatsApp">
+      <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
+    </a>
+  
+
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      <section id="dream-single-post-content" itemprop="articleBody">
+        
+
+        <p>innodb存储引擎是现在mysql的默认存储引擎，其特点是行锁设计、支持MVCC、支持外键、提供一致性非锁定读、同时被用来最有效的利用以及使用内存和CPU。</p>
+<h2 id="缓冲池">缓冲池</h2>
+<p>innodb维护了一个内存缓冲池名叫innodb_pool_buffer。当我们读一条数据的时候，先去缓冲池里面找存放改数据的页是不是在这个缓冲池中，如果在直接读取，如果不在那么先从硬盘上读取该页并放到缓冲池中供后续读取使用。写操作也是一样的，先写入缓冲池中的数据页，此时该页也叫脏页，然后再以一定的策略刷新到磁盘。缓冲池中存在的数据大致如下
+<img src="https://img.sysummery.top/1.jpg" alt=""></p>
+<p>缓冲池的大小非常重要。说的极端一点，如果我们可以把数据库的页全部缓存在缓冲池中，那么数据库中的数据就相当于缓存了。可以通过以下命令查看缓冲池的大小</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">show</span> variables <span style="color:#66d9ef">like</span> <span style="color:#e6db74">&#39;innodb_buffer_pool_size&#39;</span>
+</span></span></code></pre></div><p>现在innodb也支持同时启动多个缓冲池，数据页会根据哈希值被分配到不同的实例中去。可以通过以下命令查看缓冲池实例的个数</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">show</span> variables <span style="color:#66d9ef">like</span> <span style="color:#e6db74">&#39;innodb_buffer_pool_instance&#39;</span>
+</span></span></code></pre></div><p>缓冲池是一片连续的内存空间，innodb为每一个缓存页都创建了一些所谓的控制信息，这些信息包括该页所属的表空间编号、页号、页在缓冲池中的地址、一些锁信息以及LSN信息等。</p>
+<p>每个缓存页的大小是一样的为16k，这个值是可以更改的。每个缓存页对应的控制信息占用的内存大小是相同的，我们就姑且把这些控制信息占用的一块内存称为一个控制块。控制块和缓存页是一对一的，都在缓冲池中。他们之间的关系大致是这样的
+<img src="https://img.sysummery.top/2.jpg" alt=""></p>
+<h3 id="lru-listfree-listflush-list">LRU List、Free List、Flush List</h3>
+<p>这三个list结构上很相似，都是双向链表，除了一些元信息之外还有就是指向控制块的指针。以free list为例（这个图是我能找到的最直观的图）
+<img src="https://img.sysummery.top/3.jpg" alt=""></p>
+<p>这三个列表虽然结构类似，但是功能却大不相同。</p>
+<p><strong>LRU List</strong> 是用来管理innodb的缓冲池的。缓冲池的目的就是尽量的把热点数据缓存在内存中，进而保证数据库的性能。LRU list的职责就是尽量把热点的数据页留在内存中，把非热点的数据页从内存中移除。LRU List的前端是最频繁使用的数据页，尾端是最少使用的。当一个数据页从硬盘加载到内存中的时候在LRU List的3/8处会更新一些原信息并将指针指向一个新的<strong>控制块</strong>，而这控制块又指向一个16kb大小的数据页，这个数据页里面存放的就是刚刚从硬盘里面读取出来的数据。这个数据页会在innodb_old_blocks_time之后移动到LRU List的头部。之所以这么做是因为防止类似于扫描全表的操作污染了LRU List。当LRU List的一个节点(比如该节点叫node_lru)将要被移除的时候，Free List中会增加一个节点(比如该节点叫node_free)，node_free指向的控制块其实就是之前node_lru指向的控制块该控制块中所指向的数据页被LRU List认为是非热点数据了，这块地方要“腾出来存放别的热点数据了”</p>
+<p><strong>Free List</strong> 是用来管理空闲的数据页的。当数据库刚刚启动的时候肯定还没有任何的数据页加载到缓冲池中，这个时候Free List的节点的数目应该和<strong>控制块的</strong>的数目相等的。慢慢的当有数据页缓存到缓冲池中的时候Free List这个双向链表的节点数会慢慢变少。当一个从硬盘读取的数据页想要进入缓冲池中的时候是通过Free List来完成的。</p>
+<p><strong>Flush List</strong> 用来管理脏的数据页。写操作和读操作一样，也是先把数据页加载到内存中然后修改内存中的数据。一旦一个数据页变成了脏页那么Flush List这个链表里面就会有一个结点指向这个数据页所对应的<strong>控制块</strong>，意为这个数据页是脏的需要刷新回磁盘。<strong>同时这个数据页也一定会出现在LRU列表中</strong>，如果这个数据页将要从LRU列表中移除时那么肯定会把这个数据页同步到磁盘，这个数据页在Flush列表中的相应的节点也会被删除，这个是我们后面要将的checkpoint的技术。</p>
+<p>需要强调的是当数据库实例启动的时候控制块和缓存页就已经初始化好了。就像酒店里的房间，你住不住人房间都在那里。没有人住房间就是空的，同一个房间在不同的时间段内可能是不同的人在居住。而这三个list中的节点是会增加会减少会改变的。</p>
+<h3 id="checkpoint">checkpoint</h3>
+<p>把缓冲池中的脏页刷新回磁盘是一件很重要的事情。checkpoint所做的就是这个重要的事情。innodb中的checkpoint如下</p>
+<p>Sharp Checkpoint 数据库关闭的时候把所有的脏页刷新回磁盘
+FUZZY Checkpoint</p>
+<ul>
+<li>Master Thread Checkpoint 主线程以一个固定的时间间隔异步的刷新脏页回磁盘</li>
+<li>FLUSH_LRU_LIST Checkpoint 当LRU列表要移除数据页时并且这个数据页还标记在在Flush列表中的时候要强行的刷新这个数据页回磁盘</li>
+<li>Async/Sync Flush Checkpoint 重做日志文件将要被覆盖的时候</li>
+<li>Dirty Page too much Checkpoint 脏页的数量太多</li>
+</ul>
+<h2 id="关键特性">关键特性</h2>
+<h3 id="插入缓冲">插入缓冲</h3>
+<p>一般innodb的数据表都会有一个自增的id。因此每次插入一条数据的时候很容易找到待插入的位置，因为数据是存在主键索引的叶子节点上的。但是这有可能导致非主键索引插入的离散性。插入缓冲其实就是解决这个问题的。innodb对于非聚集索引的插入或者更新操作，不是每一次直接插入到索引页中，而是先判断插入的非聚集索引页是否在缓冲池中，若在则直接插入；若不在先放到一个插入缓冲中，然后再以一定的频率和情况进行插入缓冲和辅助索引页子节点的合并操作，这时通常能将多个插入合并到一个合并操作中，大大的提高了效率。</p>
+<h3 id="两次写">两次写</h3>
+<p>缓冲池中有2MB的内存叫做doublewrite buffer。同样硬盘上也有2M的“二次写”空间。第一次写是将内存的doublewrite buffer里的数据写到硬盘上的“二次写”空间，这个过程是顺序写，开销不大。第二次写是将doublewrite buffer里的数据写到表空间中，这个过程是离散的。如果在第二次写的过程中宕机，那么在“二次写”的硬盘空间中还备份了副本，可以用这个副本恢复数据页。
+<img src="https://img.sysummery.top/4.jpg" alt=""></p>
+<h3 id="自适应哈希索引">自适应哈希索引</h3>
+<p>Innodb存储引擎会监控对表上各索引页的查询。如果观察到建立哈希索引可以带来速度的提升，则建立哈希索引，成为自适应哈希索引。貌似我们对这个特性什么都做不了，是innodb自己完成的。</p>
+<h3 id="异步io">异步IO</h3>
+<p>脏页刷新回磁盘的操作是异步的，这样不会阻塞用户线程。</p>
+<h3 id="刷新邻接页">刷新邻接页</h3>
+<p>如果innodb决定刷新一个脏页回磁盘的时候，会检测该页所在的区的所有页需不需要一起刷新。</p>
+      </section>
+
+      
+      <div class="divider"></div>
+      <div class="flex flex-col md:flex-row justify-between gap-4 py-4">
+        
+        <a class="group btn btn-outline" href="/zh/posts/innodb-locks/" title="Innodb中的锁">
+          <ion-icon name="chevron-back"></ion-icon>
+          <div class="inline-flex flex-col items-start">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">上一页</span>
+            <span class="max-w-48 truncate">Innodb中的锁</span>
+          </div>
+        </a>
+        
+
+        
+        <a class="group btn btn-outline" href="/zh/posts/git-advance/" title="Git进阶">
+          <div class="inline-flex flex-col items-end">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">下一页</span>
+            <span class="max-w-48 truncate">Git进阶</span>
+          </div>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </a>
+        
+      </div>
+      
+      
+    <script src="https://giscus.app/client.js"
+        data-repo="skyler0513/skylersu.com"
+        data-repo-id="R_kgDON_xUqw"
+        data-category="Announcements"
+        data-category-id="DIC_kwDON_xUq84CnWa0"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+      
+    </article>
+  </div>
+
+  <div class="hidden lg:flex lg:flex-col lg:items-end">
+    
+
+    
+  </div>
+</div>
+
+            
+
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="dream-grid dream-grid-about">
+  
+  
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">关于</div>
+
+        <div class="prose dark:prose-invert">
+          <p>我叫Skyler是一个喜欢足球的飞行员！</p>
+<p>骗你的啦，⚽️和✈️只是我的理想啦，我目前是个喜欢🍺的程序员！我目前在帝都，但是很喜欢青岛和深圳，很感谢你能看完About Me !</p>
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+            
+
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme = "forest"
+</script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+
+  
+  
+  <script src="/js/grid.js"></script>
+
+
+
+
+<script src="/js/main.js"></script>
+
+    
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/luxon@1.26.0"
+  integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0="
+  crossorigin="anonymous"
+></script>
+<script>
+  format()
+
+  function format() {
+    document.querySelectorAll('span[data-format="luxon"]').forEach(el => {
+      const date = el.textContent
+
+      el.textContent = luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日")
+    })
+  }
+</script>
+
+
+
+
+
+
+  
+    <script type="module">
+      import mediumZoom from 'https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/+esm';
+      mediumZoom('#dream-single-post-content img')
+    </script>
+  
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>
