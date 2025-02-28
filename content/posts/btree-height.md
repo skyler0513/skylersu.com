@@ -3,6 +3,10 @@ title: Innodb查看B+tree的高度
 date: 2019-11-21 10:46:47
 lastmod: 2019-11-21 10:46:47
 cover: http://img.sysummery.top/b6678c667053a356f46fc5691d2f5878.webp
+avatar: https://img.sysummery.top/coffee.jpg
+authorlink: https:www.skylersu.com
+categories:
+  - 后端
 tags:
  - mysql
  - innodb

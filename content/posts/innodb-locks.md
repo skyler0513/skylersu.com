@@ -3,6 +3,10 @@ title: Innodb中的锁
 date: 2019-12-07 11:47:11
 lastmod: 2019-12-07 11:47:11
 cover: https://img.sysummery.top/lock_cover.jpg
+avatar: https://img.sysummery.top/coffee.jpg
+authorlink: https:www.skylersu.com
+categories:
+  - 后端
 tags:
   - mysql
   - innodb

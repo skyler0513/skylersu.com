@@ -3,6 +3,10 @@ title: Go语言中的垃圾回收
 date: 2020-01-01 17:37:50
 lastmod: 2020-01-01 17:37:50
 cover: https://img.sysummery.top/gogc.jpg
+avatar: https://img.sysummery.top/coffee.jpg
+authorlink: https:www.skylersu.com
+categories:
+  - 后端
 tags:
   - go
 ---

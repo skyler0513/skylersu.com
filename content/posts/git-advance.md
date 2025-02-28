@@ -3,6 +3,10 @@ title: Git进阶
 date: 2019-12-01 12:18:22
 lastmod: 2019-12-01 12:18:22
 cover: https://img.sysummery.top/git_cover.jpeg
+avatar: https://img.sysummery.top/coffee.jpg
+authorlink: https:www.skylersu.com
+categories:
+  - 后端
 tags:
   - git
 ---

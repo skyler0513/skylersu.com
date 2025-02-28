@@ -3,7 +3,7 @@
   x-data
   :class="$store.darkMode.class()"
   :data-theme="$store.darkMode.theme()">
-  <head>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Https | 🌱 夏天的海风</title>
@@ -12,11 +12,11 @@
 <link href="http://img.sysummery.top/logo.png" rel="icon" type="image/x-icon" />
 
 
-<link rel="canonical" href="http://www.skylersu.com/posts/https/" />
+<link rel="canonical" href="http://localhost:1313/posts/https/" />
 
 
 
-<meta name="author" content="Skyler" />
+<meta name="author" content="skyler" />
 <meta name="description" content="https是在应用层(http)与传输层之间多了一个SSL(TSL)层。这个层负责先将http要发送的数据使用一个密室加密之后再交给传输层。相应的，接收方的传输层先将加密的数据交给SSL(TLS)层解密后，再发送给应用层(http)。
 " />
 
@@ -28,7 +28,7 @@
 <meta name="generator" content="Hugo 0.144.2">
 
 
-<meta property="og:url" content="http://www.skylersu.com/posts/https/">
+<meta property="og:url" content="http://localhost:1313/posts/https/">
   <meta property="og:site_name" content="🌱 夏天的海风">
   <meta property="og:title" content="Https">
   <meta property="og:description" content="https是在应用层(http)与传输层之间多了一个SSL(TSL)层。这个层负责先将http要发送的数据使用一个密室加密之后再交给传输层。相应的，接收方的传输层先将加密的数据交给SSL(TLS)层解密后，再发送给应用层(http)。">
@@ -49,9 +49,7 @@
 
 
 
-  
-
-<link rel="stylesheet" href="/css/output.min.css" />
+<link rel="stylesheet" href="/css/output.css" />
 
 
 
@@ -101,7 +99,7 @@
       
       <div>
         
-        <a href="http://www.skylersu.com/" class="text-lg font-semibold cursor-pointer">
+        <a href="http://localhost:1313/" class="text-lg font-semibold cursor-pointer">
           🌱 夏天的海风
         </a>
         
@@ -157,9 +155,12 @@
 
 
 
-
-
-
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/categories" title="All Categories">
+    <ion-icon name="grid"></ion-icon>
+    All Categories
+  </a>
+</li>
 
 
 
@@ -220,9 +221,9 @@
 
       
       
-
-
-
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/categories" title="All Categories">
+  <ion-icon class="group-hover:text-primary-content" name="grid"></ion-icon>
+</a>
 
 
       
@@ -279,12 +280,16 @@
         <div class="flex justify-between">
           <div class="flex items-center">
   
-  <span>@</span>
+  <div class="avatar mr-1">
+    <div class="w-8 rounded-full">
+      <img class="my-0" src="https://img.sysummery.top/coffee.jpg" alt="" />
+    </div>
+  </div>
   
 
   <span itemprop="author" itemscope itemtype="https://schema.org/Person">
   
-    <span itemprop="name">Skyler</span>
+    <span itemprop="name">skyler</span>
   
   </span>
 </div>
@@ -302,19 +307,19 @@
   
   
     <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
-      href="https://x.com/intent/post?text=Https&amp;url=http://www.skylersu.com/posts/https/" target="_blank" rel="noopener noreferrer"
+      href="https://x.com/intent/post?text=Https&amp;url=http://localhost:1313/posts/https/" target="_blank" rel="noopener noreferrer"
       title="Share on X">
       <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
     </a>
   
     <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
-      href="https://facebook.com/sharer/sharer.php?u=http://www.skylersu.com/posts/https/" target="_blank" rel="noopener noreferrer"
+      href="https://facebook.com/sharer/sharer.php?u=http://localhost:1313/posts/https/" target="_blank" rel="noopener noreferrer"
       title="Share on Facebook">
       <ion-icon class="group-hover:text-primary-content" name="logo-facebook"></ion-icon>
     </a>
   
     <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
-      href="https://wa.me/?text=Https%20http://www.skylersu.com/posts/https/" target="_blank" rel="noopener noreferrer"
+      href="https://wa.me/?text=Https%20http://localhost:1313/posts/https/" target="_blank" rel="noopener noreferrer"
       title="Share on WhatsApp">
       <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
     </a>
@@ -473,12 +478,11 @@
       class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
     >
       <div class="card-body">
-        <div class="card-title">About Me</div>
+        <div class="card-title">关于</div>
 
         <div class="prose dark:prose-invert">
-          <p>我是一个喜欢足球的飞行员！</p>
-<p>骗你的啦，⚽️和✈️只是我的理想啦，我目前是个喜欢🍺的程序员！我的中文名叫，还是算了吧。。。一个无名之辈而已，如果非要称呼可以叫我Skyler.
-我是天津人，但是对于青岛和深圳这两座城市有很深的感情，我目前在帝都，很感谢你能看完About Me !</p>
+          <p>我叫Skyler是一个喜欢足球的飞行员！</p>
+<p>骗你的啦，⚽️和✈️只是我的理想啦，我目前是个喜欢🍺的程序员！我目前在帝都，但是很喜欢青岛和深圳，很感谢你能看完About Me !</p>
         </div>
       </div>
     </article>
@@ -549,16 +553,12 @@
 
   
   
-    
-  
-  <script src="/js/grid.min.js"></script>
+  <script src="/js/grid.js"></script>
 
 
 
 
-  
-
-<script src="/js/main.min.js"></script>
+<script src="/js/main.js"></script>
 
     
 

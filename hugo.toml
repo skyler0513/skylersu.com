@@ -5,8 +5,8 @@ title = "🌱 夏天的海风"
 theme = "dream"
 
 [services]
-[services.disqus]
-shortname = ""
+#[services.disqus]
+#shortname = ""
 # [services.googleAnalytics]
 # ID = ""
 
@@ -19,7 +19,7 @@ darkTheme = "forest"
 # backgroundImage = "me/background.jpg"
 # backgroundImageDark = ""
 
-author = "Skyler"
+author = "skyler"
 #description = "啊啊啊啊啊啊啊"
 avatar = "http://img.sysummery.top/logo.png"
 headerTitle = "🌱 夏天的海风"

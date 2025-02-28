@@ -3,6 +3,10 @@ title: ZooKeeper总结
 date: 2020-03-17 13:17:11
 lastmod: 2020-03-17 13:17:11
 cover: https://img.sysummery.top/zk.png
+avatar: https://img.sysummery.top/coffee.jpg
+authorlink: https:www.skylersu.com
+categories:
+  - 后端
 tags:
   - 分布式
 ---

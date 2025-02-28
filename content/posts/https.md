@@ -3,6 +3,10 @@ title: Https
 date: 2019-11-15 14:50:20
 lastmod: 2019-11-15 14:50:20
 cover: http://img.sysummery.top/https_cover.jpeg
+avatar: https://img.sysummery.top/coffee.jpg
+authorlink: https:www.skylersu.com
+categories:
+  - 后端
 tags:
   - https
 ---

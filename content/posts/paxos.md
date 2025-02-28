@@ -3,6 +3,10 @@ title: Basic Paxos 与 Multi Paxos
 date: 2020-03-14 22:25:13
 lastmod: 2020-03-14 22:25:13
 cover: https://img.sysummery.top/yizhi.jpg
+avatar: https://img.sysummery.top/coffee.jpg
+authorlink: https:www.skylersu.com
+categories:
+  - 后端
 tags:
   - 分布式
 ---

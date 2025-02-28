@@ -3,6 +3,10 @@ title: Raft协议学习笔记
 date: 2020-03-15 21:03:50
 lastmod: 2020-03-15 21:03:50
 cover: https://img.sysummery.top/raft.jpg
+avatar: https://img.sysummery.top/coffee.jpg
+authorlink: https:www.skylersu.com
+categories:
+  - 后端
 tags:
   - 分布式
 ---

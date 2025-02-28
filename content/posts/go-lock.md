@@ -3,6 +3,10 @@ title: Go语言中的锁
 date: 2020-01-15 14:57:01
 lastmod: 2020-01-15 14:57:01
 cover: https://img.sysummery.top/golang2.jpeg
+avatar: https://img.sysummery.top/coffee.jpg
+authorlink: https:www.skylersu.com
+categories:
+  - 后端
 tags:
   - go
 ---

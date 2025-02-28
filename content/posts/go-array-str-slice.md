@@ -3,6 +3,10 @@ title: Go语言中的数组、字符串、切片
 date: 2019-12-23 12:18:35
 lastmod: 2019-12-23 12:18:35
 cover: https://img.sysummery.top/gocover1.jpeg
+avatar: https://img.sysummery.top/coffee.jpg
+authorlink: https:www.skylersu.com
+categories:
+  - 后端
 tags:
   - go
 ---

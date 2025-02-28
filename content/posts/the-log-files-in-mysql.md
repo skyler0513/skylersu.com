@@ -3,6 +3,10 @@ title: Mysql中的日志文件
 date: 2019-11-17 08:52:53
 lastmod: 2019-11-17 08:52:53
 cover: http://img.sysummery.top/mysql_cover.jpg
+avatar: https://img.sysummery.top/coffee.jpg
+authorlink: https:www.skylersu.com
+categories:
+  - 后端
 tags:
     - mysql
     - innodb

@@ -3,6 +3,10 @@ title: 从Cookie到OAuth2再到JWT
 date: 2019-08-15 17:00:39
 lastmod: 2019-08-15 17:00:39
 cover: https://img.sysummery.top/jwt.jpeg
+avatar: https://img.sysummery.top/coffee.jpg
+authorlink: https:www.skylersu.com
+categories:
+  - 后端
 tags:
    - cookie
    - oauth2

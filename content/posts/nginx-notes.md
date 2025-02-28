@@ -3,7 +3,10 @@ title: Nginx学习笔记
 date: 2019-08-04 09:04:05
 lastmod: 2019-08-04 09:04:05
 cover: https://img.sysummery.top/nginx_cover.jpeg
-
+avatar: https://img.sysummery.top/coffee.jpg
+authorlink: https:www.skylersu.com
+categories:
+  - 后端
 tags:
   - nginx
 ---

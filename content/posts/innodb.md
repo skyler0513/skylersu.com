@@ -3,6 +3,10 @@ title: Innodb存储引擎
 date: 2019-12-03 12:20:14
 lastmod: 2019-12-03 12:20:14
 cover: https://img.sysummery.top/innodb_cover.jpeg
+avatar: https://img.sysummery.top/coffee.jpg
+authorlink: https:www.skylersu.com
+categories:
+  - 后端
 tags:
     - mysql
     - innodb
