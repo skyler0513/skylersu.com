@@ -45,16 +45,7 @@
           {{ else }}
             {{ .Date | time.Format "Monday, Jan 2, 2006" }}
           {{ end }}
-
-          | <span>{{ .ReadingTime }}{{ T "minuteRead" .ReadingTime }}</span>
-
           {{ if ne .Params.nolastmod true }}
-          | <span>{{ T "updatedAt" }}
-            {{ if site.Params.Experimental.jsDate }}
-              <span data-format="luxon">{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}</span>
-            {{ else }}
-              {{ .Lastmod | time.Format "Monday, Jan 2, 2006" }}
-            {{ end }}</span>
           {{ end }}
         </p>
         <div class="flex justify-between">

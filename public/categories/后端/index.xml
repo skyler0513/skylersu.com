@@ -5,9 +5,16 @@
     <link>http://localhost:1313/categories/%E5%90%8E%E7%AB%AF/</link>
     <description>Recent content in 后端 on 🌱 夏天的海风</description>
     <generator>Hugo</generator>
-    <language>en</language>
-    <lastBuildDate>Tue, 17 Mar 2020 13:17:11 +0000</lastBuildDate>
+    <language>zh</language>
+    <lastBuildDate>Mon, 28 Jun 2021 17:00:08 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/categories/%E5%90%8E%E7%AB%AF/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>字符编码</title>
+      <link>http://localhost:1313/posts/string-encode/</link>
+      <pubDate>Mon, 28 Jun 2021 17:00:08 +0800</pubDate>
+      <guid>http://localhost:1313/posts/string-encode/</guid>
+      <description>&lt;p&gt;字符编码在我的日常工作中默默地起着至关重要的作用，因此搞清楚它的原理是很重要的。&lt;/p&gt;</description>
+    </item>
     <item>
       <title>ZooKeeper总结</title>
       <link>http://localhost:1313/posts/zk-first-exploration/</link>

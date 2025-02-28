@@ -1,6 +1,6 @@
 baseurl = "http://www.skylersu.com"
-defaultContentLanguage = "en"
-languageCode = "en"
+defaultContentLanguage = "zh"
+languageCode = "zh"
 title = "🌱 夏天的海风"
 theme = "dream"
 

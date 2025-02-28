@@ -5,23 +5,9 @@
     <link>http://localhost:1313/tags/innodb/</link>
     <description>Recent content in Innodb on 🌱 夏天的海风</description>
     <generator>Hugo</generator>
-    <language>en</language>
-    <lastBuildDate>Sat, 07 Dec 2019 11:47:11 +0000</lastBuildDate>
+    <language>zh</language>
+    <lastBuildDate>Thu, 21 Nov 2019 10:46:47 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/innodb/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Innodb中的锁</title>
-      <link>http://localhost:1313/posts/innodb-locks/</link>
-      <pubDate>Sat, 07 Dec 2019 11:47:11 +0000</pubDate>
-      <guid>http://localhost:1313/posts/innodb-locks/</guid>
-      <description>&lt;p&gt;从粒度上来分可以分为&lt;strong&gt;行锁&lt;/strong&gt;、&lt;strong&gt;页锁&lt;/strong&gt;、&lt;strong&gt;表锁&lt;/strong&gt;; 从“性格”上分可以分为&lt;strong&gt;乐观锁&lt;/strong&gt;与&lt;strong&gt;悲观锁&lt;/strong&gt;; 从粒度上的分类应该很容易理解，不再敖述。所以是说说锁在性格上的分类。&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Innodb存储引擎</title>
-      <link>http://localhost:1313/posts/innodb/</link>
-      <pubDate>Tue, 03 Dec 2019 12:20:14 +0000</pubDate>
-      <guid>http://localhost:1313/posts/innodb/</guid>
-      <description>&lt;p&gt;innodb存储引擎是现在mysql的默认存储引擎，其特点是行锁设计、支持MVCC、支持外键、提供一致性非锁定读、同时被用来最有效的利用以及使用内存和CPU。&lt;/p&gt;</description>
-    </item>
     <item>
       <title>Innodb查看B&#43;tree的高度</title>
       <link>http://localhost:1313/posts/btree-height/</link>

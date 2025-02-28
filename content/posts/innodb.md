@@ -9,7 +9,6 @@ categories:
   - 后端
 tags:
     - mysql
-    - innodb
 ---
 
 innodb存储引擎是现在mysql的默认存储引擎，其特点是行锁设计、支持MVCC、支持外键、提供一致性非锁定读、同时被用来最有效的利用以及使用内存和CPU。

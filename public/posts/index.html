@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="zh"
   x-data
   :class="$store.darkMode.class()"
   :data-theme="$store.darkMode.theme()">
@@ -30,7 +30,7 @@
 <meta property="og:url" content="http://localhost:1313/posts/">
   <meta property="og:site_name" content="🌱 夏天的海风">
   <meta property="og:title" content="Posts">
-  <meta property="og:locale" content="en">
+  <meta property="og:locale" content="zh">
   <meta property="og:type" content="website">
 
 
@@ -67,7 +67,7 @@
   <div class="container flex justify-between px-4">
   
     <section class="flex items-center gap-4">
-      <div class="avatar cursor-pointer hover:online" @click="flip = !flip" title="Flip it!">
+      <div class="avatar cursor-pointer hover:online" @click="flip = !flip" title="翻转一下！">
         <div class="h-10 rounded-full">
           <img src="http://img.sysummery.top/logo.png" alt="🌱 夏天的海风" />
         </div>
@@ -96,8 +96,23 @@
 
 
 <li>
-  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="About">
-    <ion-icon name="information-circle"></ion-icon>About</div>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="group inline-flex items-center p-2 cursor-pointer" href="/search" title="搜索">
+    <ion-icon name="search"></ion-icon>
+    搜索
+  </a>
 </li>
 
 
@@ -110,22 +125,10 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 <li>
-  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="Archives">
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="归档">
     <ion-icon name="archive"></ion-icon>
-    Archives
+    归档
   </a>
 </li>
 
@@ -133,9 +136,9 @@
 
 
 <li>
-  <a class="inline-flex items-center p-2 cursor-pointer" href="/categories" title="All Categories">
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/categories" title="所有分类">
     <ion-icon name="grid"></ion-icon>
-    All Categories
+    所有分类
   </a>
 </li>
 
@@ -143,9 +146,9 @@
 
 
 <li>
-  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="All Tags">
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="所有标签">
     <ion-icon name="pricetags"></ion-icon>
-    All Tags
+    所有标签
   </a>
 </li>
 
@@ -163,8 +166,8 @@
       <div role="link" tabindex="0"
         class="text-sm font-semibold cursor-pointer hover:underline"
         @click="flip = !flip"
-        title="About"
-      >About</div>
+        title="关于"
+      >关于</div>
       
       
 
@@ -177,6 +180,13 @@
 
       
       
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/search" title="搜索">
+  <ion-icon class="group-hover:text-primary-content" name="search"></ion-icon>
+</a>
+
+
+      
+      
 
 
 
@@ -184,28 +194,21 @@
 
       
       
-
-
-
-
-
-      
-      
-<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="Archives">
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="归档">
   <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
 </a>
 
 
       
       
-<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/categories" title="All Categories">
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/categories" title="所有分类">
   <ion-icon class="group-hover:text-primary-content" name="grid"></ion-icon>
 </a>
 
 
       
       
-<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="All Tags">
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="所有标签">
   <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
 </a>
 
@@ -229,7 +232,7 @@
 <div class="mt-8 lg:mt-12 px-4">
   <div class="mx-auto prose dark:prose-invert">
     <h1 class="text-3xl">
-      Archives
+      归档
     </h1>
     
   </div>

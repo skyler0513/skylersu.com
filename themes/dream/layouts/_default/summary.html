@@ -44,8 +44,12 @@
       {{ partial "author.html" (dict "Params" .Params "template" "summary") }}
 
       <div class="flex items-center">
-        <ion-icon name="time" class="mr-1"></ion-icon>
-        <span>{{ .ReadingTime }}{{ T "minuteRead" .ReadingTime }}</span>
+        <ion-icon class="mr-1" name="pricetags"></ion-icon>
+        {{ if .Params.tags }}
+        {{ range .Params.tags }}
+          <span>{{ . }}</span>
+        {{ end }}
+        {{ end }}
       </div>
     </div>
   </div>
