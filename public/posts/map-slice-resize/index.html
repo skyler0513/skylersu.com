@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>切片和字段的扩容 | 🌱 夏天的海风</title>
+
+    
+<link href="http://img.sysummery.top/logo.png" rel="icon" type="image/x-icon" />
+
+
+<link rel="canonical" href="http://localhost:1313/posts/map-slice-resize/" />
+
+
+
+<meta name="author" content="skyler" />
+<meta name="description" content="Map和Slice在使用的时候如果容量不够了会自动扩容，这点对于我们来说还是很方便的。今天想研究一下他们的扩容机制
+" />
+
+
+<meta name="keywords" content="Go">
+
+
+
+<meta name="generator" content="Hugo 0.144.2">
+
+
+<meta property="og:url" content="http://localhost:1313/posts/map-slice-resize/">
+  <meta property="og:site_name" content="🌱 夏天的海风">
+  <meta property="og:title" content="切片和字段的扩容">
+  <meta property="og:description" content="Map和Slice在使用的时候如果容量不够了会自动扩容，这点对于我们来说还是很方便的。今天想研究一下他们的扩容机制">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-03-02T17:09:51+08:00">
+    <meta property="article:modified_time" content="2023-03-02T17:09:51+08:00">
+    <meta property="article:tag" content="Go">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="切片和字段的扩容">
+  <meta name="twitter:description" content="Map和Slice在使用的时候如果容量不够了会自动扩容，这点对于我们来说还是很方便的。今天想研究一下他们的扩容机制">
+
+
+
+
+<link rel="stylesheet" href="/css/output.css" />
+
+
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between px-4">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="http://img.sysummery.top/logo.png" alt="🌱 夏天的海风" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="http://localhost:1313/" class="text-lg font-semibold cursor-pointer">
+          🌱 夏天的海风
+        </a>
+        
+        
+        <div class="text-base-content/60 text-sm">怀念那些个过去的夏天</div>
+        
+      </div>
+      
+    </section>
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-[1] shadow-md">
+        
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="group inline-flex items-center p-2 cursor-pointer" href="/search" title="搜索">
+    <ion-icon name="search"></ion-icon>
+    搜索
+  </a>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/categories" title="所有分类">
+    <ion-icon name="grid"></ion-icon>
+    所有分类
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+      
+      
+      <div role="link" tabindex="0"
+        class="text-sm font-semibold cursor-pointer hover:underline"
+        @click="flip = !flip"
+        title="关于"
+      >关于</div>
+      
+      
+
+      
+      
+        
+      
+
+      
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/search" title="搜索">
+  <ion-icon class="group-hover:text-primary-content" name="search"></ion-icon>
+</a>
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/categories" title="所有分类">
+  <ion-icon class="group-hover:text-primary-content" name="grid"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+<div class="lg:grid lg:grid-cols-4 gap-4 mt-4 px-4">
+  <div class="hidden lg:block"></div>
+
+  <div class="lg:col-span-2">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
+      
+  <meta itemprop="name" content="切片和字段的扩容">
+  <meta itemprop="description" content="Map和Slice在使用的时候如果容量不够了会自动扩容，这点对于我们来说还是很方便的。今天想研究一下他们的扩容机制">
+  <meta itemprop="datePublished" content="2023-03-02T17:09:51+08:00">
+  <meta itemprop="dateModified" content="2023-03-02T17:09:51+08:00">
+  <meta itemprop="wordCount" content="236">
+  <meta itemprop="keywords" content="Go">
+
+      <header>
+        <h1 itemprop="headline">切片和字段的扩容</h1>
+        <p class="text-sm">
+          
+            <span data-format="luxon">2023-03-02T17:09:51&#43;08:00</span>
+          
+          
+          
+        </p>
+        <div class="flex justify-between">
+          <div class="flex items-center">
+  
+  <div class="avatar mr-1">
+    <div class="w-8 rounded-full">
+      <img class="my-0" src="https://img.sysummery.top/coffee.jpg" alt="" />
+    </div>
+  </div>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    <span itemprop="name">skyler</span>
+  
+  </span>
+</div>
+
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+  
+    
+  
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://x.com/intent/post?text=%e5%88%87%e7%89%87%e5%92%8c%e5%ad%97%e6%ae%b5%e7%9a%84%e6%89%a9%e5%ae%b9&amp;url=http://localhost:1313/posts/map-slice-resize/" target="_blank" rel="noopener noreferrer"
+      title="Share on X">
+      <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://facebook.com/sharer/sharer.php?u=http://localhost:1313/posts/map-slice-resize/" target="_blank" rel="noopener noreferrer"
+      title="Share on Facebook">
+      <ion-icon class="group-hover:text-primary-content" name="logo-facebook"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://wa.me/?text=%e5%88%87%e7%89%87%e5%92%8c%e5%ad%97%e6%ae%b5%e7%9a%84%e6%89%a9%e5%ae%b9%20http://localhost:1313/posts/map-slice-resize/" target="_blank" rel="noopener noreferrer"
+      title="Share on WhatsApp">
+      <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
+    </a>
+  
+
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      <section id="dream-single-post-content" itemprop="articleBody">
+        
+
+        <p>Map和Slice在使用的时候如果容量不够了会自动扩容，这点对于我们来说还是很方便的。今天想研究一下他们的扩容机制</p>
+<h3 id="map扩容">Map扩容</h3>
+<p>代码位置：<code>GoSDK/src/runtime/map.go</code>
+触发扩容的条件有2个</p>
+<ol>
+<li>超过了负载因子，这个是是6.5</li>
+<li>溢出桶的数量 &gt;= 桶的数量</li>
+</ol>
+<p>有关超出负载因子的判断在函数<code>overLoadFactor</code>中</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">bucketCntBits</span> = <span style="color:#ae81ff">3</span> <span style="color:#75715e">//bucketCnt是根据bucketCntBits计算的，是2的倍数初始值是8</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">bucketCnt</span>     = <span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#a6e22e">bucketCntBits</span> <span style="color:#75715e">// 相当于2^3 = 8</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 这两个值决定了为啥负载因子是6.5而不是其他的数</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">loadFactorNum</span> = <span style="color:#ae81ff">13</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">loadFactorDen</span> = <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// bucketShift 返回 1&lt;&lt;b，为了优化代码生成。</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">bucketShift</span>(<span style="color:#a6e22e">b</span> <span style="color:#66d9ef">uint8</span>) <span style="color:#66d9ef">uintptr</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 通过掩码处理移位数量，可以省略溢出检查。</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> uintptr(<span style="color:#ae81ff">1</span>) <span style="color:#f92672">&lt;&lt;</span> (<span style="color:#a6e22e">b</span> <span style="color:#f92672">&amp;</span> (<span style="color:#a6e22e">goarch</span>.<span style="color:#a6e22e">PtrSize</span><span style="color:#f92672">*</span><span style="color:#ae81ff">8</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>))
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// overLoadFactor 报告将 count 个项放置在 1&lt;&lt;B 个桶中是否超过负载因子。</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">overLoadFactor</span>(<span style="color:#a6e22e">count</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">B</span> <span style="color:#66d9ef">uint8</span>) <span style="color:#66d9ef">bool</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 如果 count 大于每个桶能容纳的元素数量（bucketCnt），并且</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// count 大于负载因子允许的最大元素数量（loadFactorNum*(bucketShift(B)/loadFactorDen)），</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 则返回 true，表示超过负载因子。</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">count</span> &gt; <span style="color:#a6e22e">bucketCnt</span> <span style="color:#f92672">&amp;&amp;</span> uintptr(<span style="color:#a6e22e">count</span>) &gt; <span style="color:#a6e22e">loadFactorNum</span><span style="color:#f92672">*</span>(<span style="color:#a6e22e">bucketShift</span>(<span style="color:#a6e22e">B</span>)<span style="color:#f92672">/</span><span style="color:#a6e22e">loadFactorDen</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>解释一下<code>uintptr(count) &gt; loadFactorNum*(bucketShift(B)/loadFactorDen)</code>这行代码，假设：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> = <span style="color:#a6e22e">loadFactorNum</span><span style="color:#f92672">*</span>(<span style="color:#a6e22e">bucketShift</span>(<span style="color:#a6e22e">B</span>)<span style="color:#f92672">/</span><span style="color:#a6e22e">loadFactorDen</span>)
+</span></span></code></pre></div><p>做一下数学变换,把<code>loadFactorNum</code>移到左面</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span><span style="color:#f92672">/</span><span style="color:#a6e22e">loadFactorNum</span> = <span style="color:#a6e22e">bucketShift</span>(<span style="color:#a6e22e">B</span>)<span style="color:#f92672">/</span><span style="color:#a6e22e">loadFactorDen</span>
+</span></span></code></pre></div><p>再做一次变换</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">loadFactorDen</span> = <span style="color:#a6e22e">loadFactorNum</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">bucketShift</span>(<span style="color:#a6e22e">B</span>)
+</span></span></code></pre></div><p>再把loadFactorDen移到右边</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> = (<span style="color:#a6e22e">loadFactorNum</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">bucketShift</span>(<span style="color:#a6e22e">B</span>)) <span style="color:#f92672">/</span> <span style="color:#a6e22e">loadFactorDen</span>
+</span></span></code></pre></div><p>最终得到</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> = <span style="color:#a6e22e">bucketShift</span>(<span style="color:#a6e22e">B</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">6.5</span>
+</span></span></code></pre></div><p>因此当桶的平均键值对个数超过6.5的时候就是<strong>超过了负载因子</strong></p>
+<p>有关溢出桶数量的判断在函数<code>tooManyOverflowBuckets</code>中</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">tooManyOverflowBuckets</span>(<span style="color:#a6e22e">noverflow</span> <span style="color:#66d9ef">uint16</span>, <span style="color:#a6e22e">B</span> <span style="color:#66d9ef">uint8</span>) <span style="color:#66d9ef">bool</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 如果阈值过低，我们会做额外的工作。</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 如果阈值过高，那么增长和收缩的 map 可以保留大量未使用的内存。</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// “太多”意味着（大约）与常规桶一样多的溢出桶。</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 有关更多详细信息，请参阅 incrnoverflow。</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">B</span> &gt; <span style="color:#ae81ff">15</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">B</span> = <span style="color:#ae81ff">15</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 编译器在这里看不到 B &lt; 16；掩蔽 B 以生成更短的移位代码。</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">noverflow</span> <span style="color:#f92672">&gt;=</span> uint16(<span style="color:#ae81ff">1</span>)<span style="color:#f92672">&lt;&lt;</span>(<span style="color:#a6e22e">B</span><span style="color:#f92672">&amp;</span><span style="color:#ae81ff">15</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>由此可见map最多有<code>2的15次方</code>个桶的数量，当满足这2个其中的1个条件后就会触发扩容是同步的渐进式的，哈希表的重新哈希和迁移。具体的执行方法是<code>hashGrow</code>、<code>growWork</code>和<code>evacuate</code></p>
+<h3 id="slice的扩容">Slice的扩容</h3>
+<p>相对map来说，slice的扩容只是申请一块更大的内存然后把数据copy过去，不会有rehash的过程。我们通过一个demo来观察一下扩容策略</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">2000</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">+=</span> <span style="color:#ae81ff">100</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">i</span>, cap(append(make([]<span style="color:#66d9ef">bool</span>, <span style="color:#a6e22e">i</span>), <span style="color:#66d9ef">true</span>)))
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>得到的结果为：</p>
+<pre tabindex="0"><code>0 8
+100 208
+200 416
+300 640
+400 896
+500 1024
+600 1280
+700 1408
+800 1792
+900 2048
+1000 2048
+1100 1408
+1200 1536
+1300 1792
+1400 1792
+1500 2048
+1600 2048
+1700 2304
+1800 2304
+1900 2688
+</code></pre><p>把这些点绘制成图会比较直观
+<img src="https://img.sysummery.top/slice-resize3.jpg" alt="">
+可以看出大致的正常趋势：</p>
+<table>
+  <thead>
+      <tr>
+          <th>初始长度</th>
+          <th>增长比例</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>256</td>
+          <td>2.0</td>
+      </tr>
+      <tr>
+          <td>512</td>
+          <td>1.63</td>
+      </tr>
+      <tr>
+          <td>1024</td>
+          <td>1.44</td>
+      </tr>
+      <tr>
+          <td>4096</td>
+          <td>1.30</td>
+      </tr>
+  </tbody>
+</table>
+<p>切片越大增加的越缓慢</p>
+      </section>
+
+      
+      <div class="divider"></div>
+      <div class="flex flex-col md:flex-row justify-between gap-4 py-4">
+        
+        <div></div>
+        
+
+        
+        <a class="group btn btn-outline" href="/posts/string-encode/" title="字符编码">
+          <div class="inline-flex flex-col items-end">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">下一页</span>
+            <span class="max-w-48 truncate">字符编码</span>
+          </div>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </a>
+        
+      </div>
+      
+      
+    <script src="https://giscus.app/client.js"
+        data-repo="skyler0513/skylersu.com"
+        data-repo-id="R_kgDON_xUqw"
+        data-category="Announcements"
+        data-category-id="DIC_kwDON_xUq84CnWa0"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+      
+    </article>
+  </div>
+
+  <div class="hidden lg:flex lg:flex-col lg:items-end">
+    
+
+    
+  </div>
+</div>
+
+            
+
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="dream-grid dream-grid-about">
+  
+  
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">关于</div>
+
+        <div class="prose dark:prose-invert">
+          <p>我叫Skyler是一个喜欢足球的飞行员！</p>
+<p>骗你的啦，⚽️和✈️只是我的理想啦，我目前是个喜欢🍺的程序员！我目前在帝都，但是很喜欢青岛和深圳，很感谢你能看完About Me !</p>
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+            
+
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2019 - 2025 🌱 夏天的海风 | <img src="http://img.sysummery.top/302984482-5150b40d-5918-4576-934c-385c3a4de86a.png" style="width:16px;height:16px;vertical-align:middle;display:inline-block;"><a href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">京ICP备2024089898号-2</a>
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'moon', status: 'y' },
+    { name: 'sunny', status: 'n' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme = "forest"
+</script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+
+  
+  
+  <script src="/js/grid.js"></script>
+
+
+
+
+<script src="/js/main.js"></script>
+
+    
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/luxon@1.26.0"
+  integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0="
+  crossorigin="anonymous"
+></script>
+<script>
+  format()
+
+  function format() {
+    document.querySelectorAll('span[data-format="luxon"]').forEach(el => {
+      const date = el.textContent
+
+      el.textContent = luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日")
+    })
+  }
+</script>
+
+
+
+
+
+
+  
+    <script type="module">
+      import mediumZoom from 'https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/+esm';
+      mediumZoom('#dream-single-post-content img')
+    </script>
+  
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>
