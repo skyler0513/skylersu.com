@@ -1,5 +1,5 @@
 ---
-title: 切片和字段的扩容
+title: 字典和切片的扩容
 date: 2023-03-02T17:09:51+08:00
 lastmod: 2023-03-02T17:09:51+08:00
 cover: https://img.sysummery.top/golang-map.png

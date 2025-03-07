@@ -6,14 +6,28 @@
     <description>Recent content in 后端 on 🌱 夏天的海风</description>
     <generator>Hugo</generator>
     <language>zh</language>
-    <lastBuildDate>Thu, 02 Mar 2023 17:09:51 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 15 Apr 2023 14:11:51 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/categories/%E5%90%8E%E7%AB%AF/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>切片和字段的扩容</title>
+      <title>值与指针</title>
+      <link>http://localhost:1313/posts/value-and-pointer/</link>
+      <pubDate>Sat, 15 Apr 2023 14:11:51 +0800</pubDate>
+      <guid>http://localhost:1313/posts/value-and-pointer/</guid>
+      <description>&lt;p&gt;写这篇文章的目的是记录一下平时在使用golang的过程中对于&lt;code&gt;指针&lt;/code&gt;和&lt;code&gt;值&lt;/code&gt;这两个概念的理解。虽然golang是&lt;code&gt;值传递&lt;/code&gt;，但是在使用的过程中还是会有需要注意的点。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>字典和切片的扩容</title>
       <link>http://localhost:1313/posts/map-slice-resize/</link>
       <pubDate>Thu, 02 Mar 2023 17:09:51 +0800</pubDate>
       <guid>http://localhost:1313/posts/map-slice-resize/</guid>
       <description>&lt;p&gt;Map和Slice在使用的时候如果容量不够了会自动扩容，这点对于我们来说还是很方便的。今天想研究一下他们的扩容机制&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>生成器、迭代器、装饰器</title>
+      <link>http://localhost:1313/posts/generator-iterator-decorator/</link>
+      <pubDate>Mon, 15 Aug 2022 14:11:51 +0800</pubDate>
+      <guid>http://localhost:1313/posts/generator-iterator-decorator/</guid>
+      <description>&lt;p&gt;因为这3个条目是我觉得是python中用起来很方便的“语法糖”，因此想写个文章总结一下，顺便归拢一下自己的思路。&lt;/p&gt;</description>
     </item>
     <item>
       <title>字符编码</title>

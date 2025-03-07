@@ -1,4 +1,4 @@
-baseurl = "http://www.skylersu.com"
+baseurl = "https://www.skylersu.com"
 defaultContentLanguage = "zh"
 languageCode = "zh"
 title = "🌱 夏天的海风"
@@ -21,7 +21,7 @@ darkTheme = "forest"
 
 author = "skyler"
 #description = "啊啊啊啊啊啊啊"
-avatar = "http://img.sysummery.top/logo.png"
+avatar = "https://img.sysummery.top/logo.png"
 headerTitle = "🌱 夏天的海风"
 motto = "怀念那些个过去的夏天"
 
@@ -41,7 +41,7 @@ motto = "怀念那些个过去的夏天"
 
 siteStartYear = 2019
 
-favicon = "http://img.sysummery.top/logo.png"
+favicon = "https://img.sysummery.top/logo.png"
 
 # Syntax highlighting
 # customSyntaxHighlighting = true
@@ -85,3 +85,4 @@ repoId = "R_kgDON_xUqw"
 category = "Announcements"
 categoryId = "DIC_kwDON_xUq84CnWa0"
 mapping = "pathname"
+theme = 'light'
