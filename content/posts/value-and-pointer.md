@@ -1,5 +1,5 @@
 ---
-title: 值与指针
+title: 指针使用总结
 date: 2023-04-15T14:11:51+08:00
 lastmod: 2023-04-15T14:11:51+08:00
 cover: https://img.sysummery.top/go-pointer.png
@@ -364,3 +364,124 @@ func main() {
 100
 ```
 以为第一个例子是一个语句，所以在执行`defer fmt.Println(sum)`的时候直接复制的sum的值给`fmt.Println`，当时值是0，因此最终打印的也是0。第二个例子是使用了闭包，其内部保留的是对sum的应用，也就是存放的是指针，因此最终打印的是100。
+
+### map的寻址
+先看一个例子
+```go
+func main() {
+	users := make(map[int]User)
+	users[1] = User{ID: 1, Name: "John"}
+	fmt.Println(users[1].Name)
+	users[1].Name = "peter"
+}
+```
+结果
+```
+./main.go:14:2: cannot assign to struct field users[1].Name in map
+```
+也就是说我们可以读取`users[1].Name`但是不能修改它。因为对值的修改本质上是对某一片内存地址的存放的数据的修改，修改前得先获取内存地址，在`golang`中是不允许获取`map`的值的地址的，我们修改一下代码
+```go
+func main() {
+	users := make(map[int]User)
+	users[1] = User{ID: 1, Name: "John"}
+	fmt.Printf("%p\n", &users[1])
+}
+```
+```
+./main.go:13:22: invalid operation: cannot take address of users[1] (map index expression of type User)
+```
+因为map在使用的过程当中可能会发生扩容，而这个扩容的过程是**渐进式的**，我们看一下map的结构
+```go
+// map的基础数据结构
+type hmap struct {
+	count     int
+	flags     uint8
+	B         uint8
+	noverflow uint16
+	hash0     uint32
+	buckets   unsafe.Pointer
+	oldbuckets unsafe.Pointer效
+	nevacuate  uintptr
+	extra *mapextra
+}
+```
+迁移的过程也就是逐渐的把元素从oldbuckets->buckets转移的过程，假设可以寻址修改，那么
+1. 获取了key1的地址address1
+2. map开始扩容，并且key1已经从oldbuckets迁移到了buckets,新地址为address2
+3. 使用原始的key1的地址address1写数据。。。
+很显然，这是不对的。
+
+**因此结论就是map的渐进式扩容策略导致其数据不可以被寻址**
+
+正常的做法一般是先取出来赋值给一个变量，然后再把变量写回去
+```go
+package main
+
+import "fmt"
+
+type User struct {
+	ID   int
+	Name string
+}
+
+func main() {
+	users := make(map[int]User)
+	users[1] = User{ID: 1, Name: "John"}
+	user1 := users[1]
+	user1.Name = "peter"
+	users[1] = user1
+
+	fmt.Println(users[1].Name)
+}
+
+```
+结果
+```
+peter
+```
+这种方式很好理解，其实还有另外一种方式，就是使用指针作为`map`的值
+```go
+package main
+
+import "fmt"
+
+type User struct {
+	ID   int
+	Name string
+}
+
+func main() {
+	users := make(map[int]*User)
+	users[1] = &User{ID: 1, Name: "John"}
+	users[1].Name = "peter"
+
+	fmt.Println(users[1].Name)
+}
+```
+我们还是用最开始的例子一步步分解
+1. 获取了key1的地址address1，它的value是具体的User结构体的地址obj_address1
+2. map开始扩容，并且key1已经从oldbuckets迁移到了buckets,新地址为address2,它的value是具体的User结构体的地址肯定也是obj_address1
+3. 使用原始的key1的地址address1写数据，其实就是对obj_address1所对应的对象就行修改，与使用address2进行修改是一样的
+
+
+### slice寻址
+与map类似，slice在使用过程中也有可能发生扩容，那么是不是`slice`也是不能寻址的呢？我们先写个代码实验一下
+```go
+package main
+
+import "fmt"
+
+func main() {
+	a := make([]int, 10)
+	fmt.Printf("%p\n", &a[0])
+}
+```
+结果
+```
+0xc000026050
+```
+很显然，`slice`的元素是可以寻址的，也是可以直接修改的。因为`slice`的扩容是原子的，假设下面的代码会触发`slice`扩容
+```go
+a = append(a, 1)
+```
+那么当append函数返回的时候就已经扩容好了，并不像`map`那样有个渐进式的过程。
