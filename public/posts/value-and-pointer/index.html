@@ -6,7 +6,7 @@
   <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>值与指针 | 🌱 夏天的海风</title>
+    <title>指针使用总结 | 🌱 夏天的海风</title>
 
     
 <link href="https://img.sysummery.top/logo.png" rel="icon" type="image/x-icon" />
@@ -30,7 +30,7 @@
 
 <meta property="og:url" content="http://localhost:1313/posts/value-and-pointer/">
   <meta property="og:site_name" content="🌱 夏天的海风">
-  <meta property="og:title" content="值与指针">
+  <meta property="og:title" content="指针使用总结">
   <meta property="og:description" content="写这篇文章的目的是记录一下平时在使用golang的过程中对于指针和值这两个概念的理解。虽然golang是值传递，但是在使用的过程中还是会有需要注意的点。">
   <meta property="og:locale" content="zh">
   <meta property="og:type" content="article">
@@ -43,7 +43,7 @@
 
 
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="值与指针">
+  <meta name="twitter:title" content="指针使用总结">
   <meta name="twitter:description" content="写这篇文章的目的是记录一下平时在使用golang的过程中对于指针和值这两个概念的理解。虽然golang是值传递，但是在使用的过程中还是会有需要注意的点。">
 
 
@@ -257,15 +257,15 @@
   <div class="lg:col-span-2">
     <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
       
-  <meta itemprop="name" content="值与指针">
+  <meta itemprop="name" content="指针使用总结">
   <meta itemprop="description" content="写这篇文章的目的是记录一下平时在使用golang的过程中对于指针和值这两个概念的理解。虽然golang是值传递，但是在使用的过程中还是会有需要注意的点。">
   <meta itemprop="datePublished" content="2023-04-15T14:11:51+08:00">
   <meta itemprop="dateModified" content="2023-04-15T14:11:51+08:00">
-  <meta itemprop="wordCount" content="519">
+  <meta itemprop="wordCount" content="708">
   <meta itemprop="keywords" content="Go">
 
       <header>
-        <h1 itemprop="headline">值与指针</h1>
+        <h1 itemprop="headline">指针使用总结</h1>
         <p class="text-sm">
           
             <span data-format="luxon">2023-04-15T14:11:51&#43;08:00</span>
@@ -303,7 +303,7 @@
   
   
     <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
-      href="https://x.com/intent/post?text=%e5%80%bc%e4%b8%8e%e6%8c%87%e9%92%88&amp;url=http://localhost:1313/posts/value-and-pointer/" target="_blank" rel="noopener noreferrer"
+      href="https://x.com/intent/post?text=%e6%8c%87%e9%92%88%e4%bd%bf%e7%94%a8%e6%80%bb%e7%bb%93&amp;url=http://localhost:1313/posts/value-and-pointer/" target="_blank" rel="noopener noreferrer"
       title="Share on X">
       <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
     </a>
@@ -315,7 +315,7 @@
     </a>
   
     <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
-      href="https://wa.me/?text=%e5%80%bc%e4%b8%8e%e6%8c%87%e9%92%88%20http://localhost:1313/posts/value-and-pointer/" target="_blank" rel="noopener noreferrer"
+      href="https://wa.me/?text=%e6%8c%87%e9%92%88%e4%bd%bf%e7%94%a8%e6%80%bb%e7%bb%93%20http://localhost:1313/posts/value-and-pointer/" target="_blank" rel="noopener noreferrer"
       title="Share on WhatsApp">
       <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
     </a>
@@ -622,6 +622,103 @@ in set 0xc000094020
 </span></span></code></pre></div><p>结果</p>
 <pre tabindex="0"><code>100
 </code></pre><p>以为第一个例子是一个语句，所以在执行<code>defer fmt.Println(sum)</code>的时候直接复制的sum的值给<code>fmt.Println</code>，当时值是0，因此最终打印的也是0。第二个例子是使用了闭包，其内部保留的是对sum的应用，也就是存放的是指针，因此最终打印的是100。</p>
+<h3 id="map的寻址">map的寻址</h3>
+<p>先看一个例子</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">users</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">int</span>]<span style="color:#a6e22e">User</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">users</span>[<span style="color:#ae81ff">1</span>] = <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">ID</span>: <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">Name</span>: <span style="color:#e6db74">&#34;John&#34;</span>}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">users</span>[<span style="color:#ae81ff">1</span>].<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">users</span>[<span style="color:#ae81ff">1</span>].<span style="color:#a6e22e">Name</span> = <span style="color:#e6db74">&#34;peter&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>结果</p>
+<pre tabindex="0"><code>./main.go:14:2: cannot assign to struct field users[1].Name in map
+</code></pre><p>也就是说我们可以读取<code>users[1].Name</code>但是不能修改它。因为对值的修改本质上是对某一片内存地址的存放的数据的修改，修改前得先获取内存地址，在<code>golang</code>中是不允许获取<code>map</code>的值的地址的，我们修改一下代码</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">users</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">int</span>]<span style="color:#a6e22e">User</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">users</span>[<span style="color:#ae81ff">1</span>] = <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">ID</span>: <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">Name</span>: <span style="color:#e6db74">&#34;John&#34;</span>}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%p\n&#34;</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">users</span>[<span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><pre tabindex="0"><code>./main.go:13:22: invalid operation: cannot take address of users[1] (map index expression of type User)
+</code></pre><p>因为map在使用的过程当中可能会发生扩容，而这个扩容的过程是<strong>渐进式的</strong>，我们看一下map的结构</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// map的基础数据结构</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">hmap</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">count</span>     <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">flags</span>     <span style="color:#66d9ef">uint8</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">B</span>         <span style="color:#66d9ef">uint8</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">noverflow</span> <span style="color:#66d9ef">uint16</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">hash0</span>     <span style="color:#66d9ef">uint32</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">buckets</span>   <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">oldbuckets</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer效</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">nevacuate</span>  <span style="color:#66d9ef">uintptr</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">extra</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mapextra</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>迁移的过程也就是逐渐的把元素从oldbuckets-&gt;buckets转移的过程，假设可以寻址修改，那么</p>
+<ol>
+<li>获取了key1的地址address1</li>
+<li>map开始扩容，并且key1已经从oldbuckets迁移到了buckets,新地址为address2</li>
+<li>使用原始的key1的地址address1写数据。。。
+很显然，这是不对的。</li>
+</ol>
+<p><strong>因此结论就是map的渐进式扩容策略导致其数据不可以被寻址</strong></p>
+<p>正常的做法一般是先取出来赋值给一个变量，然后再把变量写回去</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">User</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ID</span>   <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Name</span> <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">users</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">int</span>]<span style="color:#a6e22e">User</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">users</span>[<span style="color:#ae81ff">1</span>] = <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">ID</span>: <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">Name</span>: <span style="color:#e6db74">&#34;John&#34;</span>}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">user1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">users</span>[<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">user1</span>.<span style="color:#a6e22e">Name</span> = <span style="color:#e6db74">&#34;peter&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">users</span>[<span style="color:#ae81ff">1</span>] = <span style="color:#a6e22e">user1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">users</span>[<span style="color:#ae81ff">1</span>].<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>结果</p>
+<pre tabindex="0"><code>peter
+</code></pre><p>这种方式很好理解，其实还有另外一种方式，就是使用指针作为<code>map</code>的值</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">User</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ID</span>   <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Name</span> <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">users</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">int</span>]<span style="color:#f92672">*</span><span style="color:#a6e22e">User</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">users</span>[<span style="color:#ae81ff">1</span>] = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">ID</span>: <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">Name</span>: <span style="color:#e6db74">&#34;John&#34;</span>}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">users</span>[<span style="color:#ae81ff">1</span>].<span style="color:#a6e22e">Name</span> = <span style="color:#e6db74">&#34;peter&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">users</span>[<span style="color:#ae81ff">1</span>].<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>我们还是用最开始的例子一步步分解</p>
+<ol>
+<li>获取了key1的地址address1，它的value是具体的User结构体的地址obj_address1</li>
+<li>map开始扩容，并且key1已经从oldbuckets迁移到了buckets,新地址为address2,它的value是具体的User结构体的地址肯定也是obj_address1</li>
+<li>使用原始的key1的地址address1写数据，其实就是对obj_address1所对应的对象就行修改，与使用address2进行修改是一样的</li>
+</ol>
+<h3 id="slice寻址">slice寻址</h3>
+<p>与map类似，slice在使用过程中也有可能发生扩容，那么是不是<code>slice</code>也是不能寻址的呢？我们先写个代码实验一下</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">10</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%p\n&#34;</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">0</span>])
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>结果</p>
+<pre tabindex="0"><code>0xc000026050
+</code></pre><p>很显然，<code>slice</code>的元素是可以寻址的，也是可以直接修改的。因为<code>slice</code>的扩容是原子的，假设下面的代码会触发<code>slice</code>扩容</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">a</span> = append(<span style="color:#a6e22e">a</span>, <span style="color:#ae81ff">1</span>)
+</span></span></code></pre></div><p>那么当append函数返回的时候就已经扩容好了，并不像<code>map</code>那样有个渐进式的过程。</p>
       </section>
 
       

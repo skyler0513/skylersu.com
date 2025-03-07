@@ -9,7 +9,7 @@
     <lastBuildDate>Sat, 15 Apr 2023 14:11:51 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>值与指针</title>
+      <title>指针使用总结</title>
       <link>http://localhost:1313/posts/value-and-pointer/</link>
       <pubDate>Sat, 15 Apr 2023 14:11:51 +0800</pubDate>
       <guid>http://localhost:1313/posts/value-and-pointer/</guid>
