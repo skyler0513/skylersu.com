@@ -2,24 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Innodb on 🌱 夏天的海风</title>
-    <link>//localhost:1313/tags/innodb/</link>
+    <link>http://localhost:1313/tags/innodb/</link>
     <description>Recent content in Innodb on 🌱 夏天的海风</description>
     <generator>Hugo</generator>
     <language>zh</language>
     <lastBuildDate>Thu, 21 Nov 2019 10:46:47 +0000</lastBuildDate>
-    <atom:link href="//localhost:1313/tags/innodb/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/innodb/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Innodb查看B&#43;tree的高度</title>
-      <link>//localhost:1313/posts/btree-height/</link>
+      <link>http://localhost:1313/posts/btree-height/</link>
       <pubDate>Thu, 21 Nov 2019 10:46:47 +0000</pubDate>
-      <guid>//localhost:1313/posts/btree-height/</guid>
+      <guid>http://localhost:1313/posts/btree-height/</guid>
       <description>&lt;p&gt;在innodb中无论是主键索引还是非主键索引数据结构都是B+tree。而B+tree数的高度直接决定了在不考虑缓存的情况下读取一个数据页硬盘所需的IO次数，因此B+tree的高度相当重要。生产环境下高度一般为2~3.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Mysql中的日志文件</title>
-      <link>//localhost:1313/posts/the-log-files-in-mysql/</link>
+      <link>http://localhost:1313/posts/the-log-files-in-mysql/</link>
       <pubDate>Sun, 17 Nov 2019 08:52:53 +0000</pubDate>
-      <guid>//localhost:1313/posts/the-log-files-in-mysql/</guid>
+      <guid>http://localhost:1313/posts/the-log-files-in-mysql/</guid>
       <description>&lt;p&gt;mysql中有很多重要的日志文件，这些日志文件主要可以分为两大类：服务器的日志文件以及存储引擎的日志文件。平时我们用的存储引擎都是innodb，因此今天介绍的存储引擎的日志文件也是innodb的日志文件。&lt;/p&gt;</description>
     </item>
   </channel>
