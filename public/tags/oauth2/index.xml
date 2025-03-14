@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Oauth2 on 🌱 夏天的海风</title>
-    <link>http://localhost:1313/tags/oauth2/</link>
+    <link>https://skylersu.com/tags/oauth2/</link>
     <description>Recent content in Oauth2 on 🌱 夏天的海风</description>
     <generator>Hugo</generator>
     <language>zh</language>
     <lastBuildDate>Thu, 15 Aug 2019 17:00:39 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/oauth2/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://skylersu.com/tags/oauth2/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>从Cookie到OAuth2再到JWT</title>
-      <link>http://localhost:1313/posts/cookie-oauth2-jwt/</link>
+      <link>https://skylersu.com/posts/cookie-oauth2-jwt/</link>
       <pubDate>Thu, 15 Aug 2019 17:00:39 +0000</pubDate>
-      <guid>http://localhost:1313/posts/cookie-oauth2-jwt/</guid>
+      <guid>https://skylersu.com/posts/cookie-oauth2-jwt/</guid>
       <description>&lt;p&gt;cookie加session认证是比较传统的方法，但是随着分布式系统的出现，这种认证方式局限性就渐渐显露出来了。OAuth2认证主要是用于使用公共平台的身份去登陆第三方网站。JWT是一种简单的认证方式，适合分布式系统。今天想总结一下工作几年来使用的三种认证方式&lt;/p&gt;</description>
     </item>
   </channel>

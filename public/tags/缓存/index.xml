@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>缓存 on 🌱 夏天的海风</title>
-    <link>http://localhost:1313/tags/%E7%BC%93%E5%AD%98/</link>
+    <link>https://skylersu.com/tags/%E7%BC%93%E5%AD%98/</link>
     <description>Recent content in 缓存 on 🌱 夏天的海风</description>
     <generator>Hugo</generator>
     <language>zh</language>
     <lastBuildDate>Mon, 17 Jul 2023 14:11:51 +0800</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/%E7%BC%93%E5%AD%98/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://skylersu.com/tags/%E7%BC%93%E5%AD%98/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>缓存</title>
-      <link>http://localhost:1313/posts/cache/</link>
+      <link>https://skylersu.com/posts/cache/</link>
       <pubDate>Mon, 17 Jul 2023 14:11:51 +0800</pubDate>
-      <guid>http://localhost:1313/posts/cache/</guid>
+      <guid>https://skylersu.com/posts/cache/</guid>
       <description>&lt;p&gt;缓存是后端程序员永远绕不开的一个话题，今天在做一个需求的时候，偶然的发现我们的数据库代理服务有200w+的&lt;code&gt;qps&lt;/code&gt;，对于to B的业务来说这已经很高了，所以想借此机会总结一下。&lt;/p&gt;</description>
     </item>
   </channel>

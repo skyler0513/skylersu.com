@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>字符编码 on 🌱 夏天的海风</title>
-    <link>http://localhost:1313/tags/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/</link>
+    <link>https://skylersu.com/tags/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/</link>
     <description>Recent content in 字符编码 on 🌱 夏天的海风</description>
     <generator>Hugo</generator>
     <language>zh</language>
     <lastBuildDate>Mon, 28 Jun 2021 17:00:08 +0800</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://skylersu.com/tags/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>字符编码</title>
-      <link>http://localhost:1313/posts/string-encode/</link>
+      <link>https://skylersu.com/posts/string-encode/</link>
       <pubDate>Mon, 28 Jun 2021 17:00:08 +0800</pubDate>
-      <guid>http://localhost:1313/posts/string-encode/</guid>
+      <guid>https://skylersu.com/posts/string-encode/</guid>
       <description>&lt;p&gt;字符编码在我的日常工作中默默地起着至关重要的作用，因此搞清楚它的原理是很重要的。&lt;/p&gt;</description>
     </item>
   </channel>
