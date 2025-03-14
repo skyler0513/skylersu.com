@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on 🌱 夏天的海风</title>
-    <link>http://localhost:1313/categories/</link>
+    <link>//localhost:1313/categories/</link>
     <description>Recent content in Categories on 🌱 夏天的海风</description>
     <generator>Hugo</generator>
     <language>zh</language>
     <lastBuildDate>Tue, 02 Jan 2024 17:09:51 +0800</lastBuildDate>
-    <atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="//localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>后端</title>
-      <link>http://localhost:1313/categories/%E5%90%8E%E7%AB%AF/</link>
+      <link>//localhost:1313/categories/%E5%90%8E%E7%AB%AF/</link>
       <pubDate>Tue, 02 Jan 2024 17:09:51 +0800</pubDate>
-      <guid>http://localhost:1313/categories/%E5%90%8E%E7%AB%AF/</guid>
+      <guid>//localhost:1313/categories/%E5%90%8E%E7%AB%AF/</guid>
       <description></description>
     </item>
   </channel>

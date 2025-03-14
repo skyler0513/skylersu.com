@@ -2,31 +2,31 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>分布式 on 🌱 夏天的海风</title>
-    <link>http://localhost:1313/tags/%E5%88%86%E5%B8%83%E5%BC%8F/</link>
+    <link>//localhost:1313/tags/%E5%88%86%E5%B8%83%E5%BC%8F/</link>
     <description>Recent content in 分布式 on 🌱 夏天的海风</description>
     <generator>Hugo</generator>
     <language>zh</language>
     <lastBuildDate>Tue, 17 Mar 2020 13:17:11 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/%E5%88%86%E5%B8%83%E5%BC%8F/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="//localhost:1313/tags/%E5%88%86%E5%B8%83%E5%BC%8F/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ZooKeeper总结</title>
-      <link>http://localhost:1313/posts/zk-first-exploration/</link>
+      <link>//localhost:1313/posts/zk-first-exploration/</link>
       <pubDate>Tue, 17 Mar 2020 13:17:11 +0000</pubDate>
-      <guid>http://localhost:1313/posts/zk-first-exploration/</guid>
+      <guid>//localhost:1313/posts/zk-first-exploration/</guid>
       <description>&lt;p&gt;ZooKeeper是一个分布式的，开放源码的分布式应用程序协调服务，是Google的Chubby一个开源的实现，是Hadoop和Hbase的重要组件。它是一个为分布式应用提供一致性服务的软件，提供的功能包括：配置维护、域名服务、分布式同步、组服务等。&lt;/p&gt;</description>
     </item>
     <item>
       <title>Raft协议学习笔记</title>
-      <link>http://localhost:1313/posts/raft-note/</link>
+      <link>//localhost:1313/posts/raft-note/</link>
       <pubDate>Sun, 15 Mar 2020 21:03:50 +0000</pubDate>
-      <guid>http://localhost:1313/posts/raft-note/</guid>
+      <guid>//localhost:1313/posts/raft-note/</guid>
       <description>&lt;p&gt;raft也是分布式系统的一个共识算法，号称比paxos更容易理解。&lt;/p&gt;</description>
     </item>
     <item>
       <title>Basic Paxos 与 Multi Paxos</title>
-      <link>http://localhost:1313/posts/paxos/</link>
+      <link>//localhost:1313/posts/paxos/</link>
       <pubDate>Sat, 14 Mar 2020 22:25:13 +0000</pubDate>
-      <guid>http://localhost:1313/posts/paxos/</guid>
+      <guid>//localhost:1313/posts/paxos/</guid>
       <description>&lt;p&gt;Paxos算法是Leslie Lamport于1990年提出的一种基于消息传递且具有高度容错特性的一致性算法，是目前公认的解决分布式一致性问题最有效的算法之一。&lt;/p&gt;</description>
     </item>
   </channel>

@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Python on 🌱 夏天的海风</title>
-    <link>http://localhost:1313/tags/python/</link>
+    <link>//localhost:1313/tags/python/</link>
     <description>Recent content in Python on 🌱 夏天的海风</description>
     <generator>Hugo</generator>
     <language>zh</language>
     <lastBuildDate>Mon, 15 Aug 2022 14:11:51 +0800</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="//localhost:1313/tags/python/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>生成器、迭代器、装饰器</title>
-      <link>http://localhost:1313/posts/generator-iterator-decorator/</link>
+      <link>//localhost:1313/posts/generator-iterator-decorator/</link>
       <pubDate>Mon, 15 Aug 2022 14:11:51 +0800</pubDate>
-      <guid>http://localhost:1313/posts/generator-iterator-decorator/</guid>
+      <guid>//localhost:1313/posts/generator-iterator-decorator/</guid>
       <description>&lt;p&gt;因为这3个条目是我觉得是python中用起来很方便的“语法糖”，因此想写个文章总结一下，顺便归拢一下自己的思路。&lt;/p&gt;</description>
     </item>
   </channel>
