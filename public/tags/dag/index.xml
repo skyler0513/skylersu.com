@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>DAG on 🌱 夏天的海风</title>
+    <link>http://localhost:1313/tags/dag/</link>
+    <description>Recent content in DAG on 🌱 夏天的海风</description>
+    <generator>Hugo</generator>
+    <language>zh</language>
+    <lastBuildDate>Tue, 02 Jan 2024 17:09:51 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/dag/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DAG</title>
+      <link>http://localhost:1313/posts/dag/</link>
+      <pubDate>Tue, 02 Jan 2024 17:09:51 +0800</pubDate>
+      <guid>http://localhost:1313/posts/dag/</guid>
+      <description>&lt;p&gt;最近在重构需求的时候，使用到了DAG. 隐隐约约觉得之前接触过。因为在学校里老师在讲数据结构的时候讲过“图”，因此我坚信之前肯定学过，只不过是忘了而已。幸好这次有一个可以使用它解决实际问题的机会，所以写个文章记录一下它的原理。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

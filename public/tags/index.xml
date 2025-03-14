@@ -6,8 +6,15 @@
     <description>Recent content in Tags on 🌱 夏天的海风</description>
     <generator>Hugo</generator>
     <language>zh</language>
-    <lastBuildDate>Mon, 17 Jul 2023 14:11:51 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 02 Jan 2024 17:09:51 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DAG</title>
+      <link>http://localhost:1313/tags/dag/</link>
+      <pubDate>Tue, 02 Jan 2024 17:09:51 +0800</pubDate>
+      <guid>http://localhost:1313/tags/dag/</guid>
+      <description></description>
+    </item>
     <item>
       <title>缓存</title>
       <link>http://localhost:1313/tags/%E7%BC%93%E5%AD%98/</link>
