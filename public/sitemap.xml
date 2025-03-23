@@ -56,12 +56,6 @@
     <loc>https://skylersu.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/</loc>
     <lastmod>2020-03-17T13:17:11+00:00</lastmod>
   </url><url>
-    <loc>https://skylersu.com/posts/raft-note/</loc>
-    <lastmod>2020-03-15T21:03:50+00:00</lastmod>
-  </url><url>
-    <loc>https://skylersu.com/posts/paxos/</loc>
-    <lastmod>2020-03-14T22:25:13+00:00</lastmod>
-  </url><url>
     <loc>https://skylersu.com/posts/go-lock/</loc>
     <lastmod>2020-01-15T14:57:01+00:00</lastmod>
   </url><url>
@@ -70,6 +64,12 @@
   </url><url>
     <loc>https://skylersu.com/posts/go-array-str-slice/</loc>
     <lastmod>2019-12-23T12:18:35+00:00</lastmod>
+  </url><url>
+    <loc>https://skylersu.com/posts/raft-note/</loc>
+    <lastmod>2019-12-15T21:03:50+00:00</lastmod>
+  </url><url>
+    <loc>https://skylersu.com/posts/paxos/</loc>
+    <lastmod>2019-12-14T22:25:13+00:00</lastmod>
   </url><url>
     <loc>https://skylersu.com/posts/innodb-locks/</loc>
     <lastmod>2019-12-07T11:47:11+00:00</lastmod>
