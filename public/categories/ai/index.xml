@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>AI on 🌱 夏天的海风</title>
+    <link>https://skylersu.com/categories/ai/</link>
+    <description>Recent content in AI on 🌱 夏天的海风</description>
+    <generator>Hugo</generator>
+    <language>zh</language>
+    <lastBuildDate>Thu, 07 Aug 2025 20:56:49 +0800</lastBuildDate>
+    <atom:link href="https://skylersu.com/categories/ai/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MCP协议</title>
+      <link>https://skylersu.com/posts/mcp/</link>
+      <pubDate>Thu, 07 Aug 2025 20:56:49 +0800</pubDate>
+      <guid>https://skylersu.com/posts/mcp/</guid>
+      <description>&lt;p&gt;MCP（Model Context Protocol，模型上下文协议） ，2024年11月底，由 Anthropic 推出的一种开放标准，旨在统一大模型与外部数据源和工具之间的通信协议。MCP 的主要目的在于解决当前 AI 模型因数据孤岛限制而无法充分发挥潜力的难题，MCP 使得 AI 应用能够安全地访问和操作本地及远程数据，为 AI 应用提供了连接万物的接口。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
